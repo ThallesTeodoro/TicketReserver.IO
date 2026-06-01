@@ -28,10 +28,10 @@ Este projeto faz parte de um **Plano de Desenvolvimento Individual (PDI)** focad
 
 ## 5. Arquitetura de Alto Nível
 O sistema é composto por três domínios principais:
-1.  **Service-Reservation:** API de entrada, controle de assentos e Outbox Table.
-2.  **Outbox-Relay:** Componentes segregados (Workers) que extraem dados do DB e publicam no Kafka (Um para cada domínio).
-3.  **Service-Payment:** Worker de processamento financeiro com controle de idempotência transacional.
-4.  **Service-Ticketing:** Worker de emissão de ingressos após confirmação de pagamento.
+1.  **TR.API.Reservation:** API de entrada, controle de assentos e Outbox Table.
+2.  **TR.HW.OutboxRelay:** Componentes segregados (Workers) que extraem dados do DB e publicam no Kafka (Um para cada domínio).
+3.  **TR.HW.Payment:** Worker de processamento financeiro com controle de idempotência transacional.
+4.  **TR.HW.Ticketing:** Worker de emissão de ingressos após confirmação de pagamento.
 
 ## 6. Padrões de Projeto & Estratégias
 *   **Idempotência:** Híbrida (Redis na entrada da API / Unique Constraint no DB de Pagamento).
@@ -41,18 +41,25 @@ O sistema é composto por três domínios principais:
 *   **Rastreio:** Injeção de Contexto (TraceId) via Kafka Headers para propagação de traces.
 
 ## 7. Estrutura de Pastas do Projeto
-*   `/specification`: Detalhamento técnico de cada componente e fluxo.
-    *   `business-rules.md`
-    *   `arch-decision-records.md` (ADRs)
-    *   `kafka-topics.md`
-    *   `db-schemas.md`
-    *   `observability-spec.md`
-*   `/planning`: Roteiro de desenvolvimento e Sprints.
-    *   `backlog.md`
-    *   `sprint-01.md` (Infra e Base)
-    *   `sprint-02.md` (SAGA e Resiliência)
-*   `/codebase`: Onde ficarão os códigos fontes
-*   `/documentation`: Local futuro da documentação do projeto
+*   `.gemini/`: Documentação de suporte e instruções para a IA.
+    *   `RULES.md`: Regras de engenharia inegociáveis.
+    *   `STYLE-GUIDE.md`: Guia de estilo e fluxo de desenvolvimento.
+    *   `GLOSSARY.md`: Linguagem ubíqua.
+    *   `ADVISORS.md`: Definição de personas (Reviewers).
+    *   `specification/`: Detalhamento técnico.
+        *   `01-arch-decisions.md` (ADRs)
+        *   `02-contracts.md` (Eventos Kafka)
+        *   `03-data-models.md` (DB Schemas)
+        *   `04-observability.md` (OTel Spec)
+        *   `05-infra-spec.md` (Docker/K8s Spec)
+*   `planning/`: Roteiro de desenvolvimento e Sprints.
+    *   `backlog.md`: Lista geral de tarefas.
+    *   `sprint-01.md`: Definição da sprint atual.
+    *   `sprint01_tasks.md`: Detalhamento de execução.
+    *   `sprint01_logs.md`: Registro de atividades.
+*   `source/`: Onde ficará o código-fonte (Solução .NET).
+*   `GEMINI.md`: Instruções de inicialização e contexto para o agente.
+*   `PROJECT.md`: Este documento de visão geral.
 
 ## 8. Definição de Pronto (DoP)
 O projeto será considerado concluído quando:

@@ -4,7 +4,7 @@
 Todos os logs gerados em C# devem obrigatoriamente incluir os seguintes atributos estruturados:
 
 *   `Environment`: `development` | `production`
-*   `Service`: Nome do microsserviço (ex: `service-reservation`)
+*   `Service`: Nome do microsserviço (ex: `tr-api-reservation`)
 *   `TraceId`: Capturado nativamente da thread corrente do OpenTelemetry.
 *   `SpanId`: Capturado nativamente da thread corrente do OpenTelemetry.
 
@@ -21,8 +21,8 @@ A árvore de spans do OpenTelemetry deve seguir estritamente o grafo abaixo para
 [HTTP POST /reserva] -> Inicia Trace
    └── [Redis SET NX] (Mapeia latência do cache de entrada)
    └── [SQL INSERT Reservation + Outbox] (Mapeia latência do Postgres)
-       └── [Outbox-Relay Polling] (Cria Span Link para o Kafka Producer)
+       └── [TR.HW.OutboxRelay Polling] (Cria Span Link para o Kafka Producer)
            └── [Kafka Topic: reservation.created]
-               └── [Worker-Pagamento Consumer] (Extrai Contexto dos Headers)
+               └── [TR.HW.Payment Consumer] (Extrai Contexto dos Headers)
                    └── [SQL INSERT Payment] (Mapeia latência financeira)
 ```

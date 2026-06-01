@@ -34,3 +34,7 @@ O container do Grafana deve ser provisionado via provisioning scripts automátic
 
 *   **Data Sources Pré-configurados**: Loki, Tempo e Prometheus conectados por padrão.
 *   **Trace-to-Logs Integration**: Configurar o Grafana para que, ao clicar em um TraceID no Tempo, ele abra automaticamente os logs correspondentes no Loki filtrados por aquele exato ID.
+
+## 4. Redes e Isolamento (Security Guardrails)
+*   **Ingress Pública:** Apenas `TR.API.Reservation` é acessível externamente.
+*   **Internal Network:** `TR.HW.OutboxRelay`, `TR.HW.Payment` e `TR.HW.Ticketing` residem em rede privada sem exposição de portas externas.

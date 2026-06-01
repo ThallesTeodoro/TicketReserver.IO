@@ -50,6 +50,6 @@ Sempre que a IA receber a tarefa de criar uma nova funcionalidade, ela deve guia
 3.  **Application - Contratos de Entrada/Saída:** Criar as estruturas de `Command`/`Query` e o objeto de `Output`.
 4.  **Application - Mappers:** Escrever as classes estáticas de extensão para mapear de/para a Entidade.
 5.  **Infrastructure - Adaptador (Repository Implementation):** Implementar o repositório usando Dapper, envolvendo as chamadas SQL em políticas de resiliência do **Polly** (Retry transient faults).
-6.  **Infrastructure - Comunicação Externa (Se aplicável):** Definir as interfaces de API via Refit ou Producers com a biblioteca da Confluent.Kafka (Sempre valide os tópicos no arquivo `specification/02-contracts.md`).
+6.  **Infrastructure - Comunicação Externa (Se aplicável):** Definir as interfaces de API via Refit ou Producers com a biblioteca da Confluent.Kafka (Sempre valide os tópicos no arquivo `.gemini/specification/02-contracts.md`).
 7.  **Delivery - Minimal API / UseCase Application:** Criar a rota na Minimal API injetando o manipulador e disparando a execução.
 8.  **Test - Validação de Unidade:** Escrever a suite de testes cobrindo sucesso, falhas declarativas e regras de borda usando Moq e FluentAssertions.

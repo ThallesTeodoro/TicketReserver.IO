@@ -12,6 +12,7 @@
 
 ### Tabela: `OutboxMessages`
 *   `Id` (UUID, Primary Key)
+*   `CorrelationId` (UUID) -> TraceId do OpenTelemetry para rastreabilidade ponta-a-ponta
 *   `EventType` (VARCHAR(100)) -> Ex: `reservation.created`
 *   `Payload` (JSONB)
 *   `CreatedAt` (TIMESTAMP)

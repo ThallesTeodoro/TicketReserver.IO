@@ -1,18 +1,24 @@
-# Sprint 01 - Infraestrutura Base, Telemetria e API Inicial (sprint-01.md)
+# Sprint 01 - Fundação de Infraestrutura e Observabilidade (sprint-01.md)
 
 ## Objetivo da Sprint
-Montar todo o ecossistema de ferramentas em contêineres Docker, estruturar a injeção do OpenTelemetry na API de Reserva e validar o recebimento de logs estruturados e traces correlacionados no Grafana Loki.
+Prover todo o ecossistema de ferramentas necessárias para o desenvolvimento, garantindo que a comunicação entre bancos, mensageria e o pipeline de observabilidade esteja validado e monitorado antes de iniciarmos qualquer código de negócio.
 
 ## Tarefas Detalhadas
 
-### 1. Infra-as-Code Local (`docker-compose.yml`)
-*   **Descrição:** Montar o ambiente contendo: Postgres (3 bases lógicas segregadas), Redis Stack, Apache Kafka (KRaft mode), OpenTelemetry Collector (configurado para exportar em OTLP), Grafana Loki (Logs), Grafana Tempo (Traces) e AKHQ (Interface Kafka).
-*   **DoD (Definition of Done):** Todos os contêineres de pé e a interface do Grafana e do AKHQ acessíveis via navegador.
+### 1. Provisionamento do Ecossistema Docker
+*   **Descrição:** Criar o `docker-compose.yml` contendo toda a stack tecnológica.
+*   **Componentes:**
+    *   Postgres (Script de init para bases `reservation_db`, `payment_db`, `ticketing_db`).
+    *   Redis Stack (Cache e interface Insight).
+    *   Kafka (KRaft) + AKHQ (UI).
+    *   OpenTelemetry Collector.
+    *   Grafana Stack (Loki, Tempo, Prometheus).
+*   **DoD:** Todos os contêineres saudáveis e interfaces (AKHQ, Grafana, Redis Insight) acessíveis.
 
-### 2. Boilerplate .NET & OpenTelemetry Setup
-*   **Descrição:** Criar a Minimal API `Service-Reservation`. Configurar o SDK do OpenTelemetry no `Program.cs` para capturar métricas, traces e logs do ASP.NET Core e do Entity Framework Core.
-*   **DoD:** Rodar a API localmente, fazer uma chamada HTTP e visualizar o Trace gerado de forma gráfica dentro do painel do Grafana Tempo.
+### 2. Configuração do Pipeline de Telemetria
+*   **Descrição:** Configurar o OTel Collector para receber dados via OTLP e rotear Logs para o Loki e Traces para o Tempo.
+*   **DoD:** Realizar um teste de ingestão manual (via curl ou script simples) e visualizar o dado no Grafana.
 
-### 3. Implementação do Middleware de Idempotência (Redis)
-*   **Descrição:** Criar um Action Filter ou Middleware customizado que intercepta o header `X-Idempotency-Key`. Implementar a validação atômica no Redis.
-*   **DoD:** Executar duas chamadas HTTP idênticas em menos de 5 segundos via Postman/Insomnia; a primeira deve retornar `201 Created` e a segunda deve retornar `409 Conflict` (ou o retorno cacheado), exibindo a tag de idempotência no log do Loki.
+### 3. Setup de Dashboards e Provisionamento
+*   **Descrição:** Configurar o Grafana via scripts de provisioning para carregar automaticamente os Data Sources e Dashboards básicos de monitoramento de infraestrutura (CPU/Memória dos containers e volume de mensagens no Kafka).
+*   **DoD:** Ao subir o docker-compose, o Grafana deve estar pronto para uso, sem necessidade de configuração manual de fontes de dados.

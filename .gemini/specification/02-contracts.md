@@ -4,8 +4,8 @@ Todos os eventos trafegados no ecossistema devem conter os seguintes metadados o
 *   `traceparent` (String, Padrão W3C contendo o TraceId para correlação do OpenTelemetry).
 
 ## Tópico: `reservation.created`
-*   **Produtor:** Outbox-Relay (Contexto de Reserva)
-*   **Consumidor:** Worker-Pagamento
+*   **Produtor:** TR.HW.OutboxRelay (Contexto de Reserva)
+*   **Consumidor:** TR.HW.Payment
 *   **Payload Schema (JSON):**
 ```json
 {
@@ -19,8 +19,8 @@ Todos os eventos trafegados no ecossistema devem conter os seguintes metadados o
 ```
 
 ## Tópico: payment.approved
-*   **Produtor**: Worker-Pagamento
-*   **Consumidor**: Worker-Ticketing
+*   **Produtor**: TR.HW.Payment
+*   **Consumidor**: TR.HW.Ticketing
 *   **Payload Schema (JSON):**
 ```json
 {
@@ -34,8 +34,8 @@ Todos os eventos trafegados no ecossistema devem conter os seguintes metadados o
 ```
 
 ## Tópico: payment.refused (Evento de Compensação SAGA)
-*   **Produtor**: Worker-Pagamento
-*   **Consumidor**: API-Reserva (Handler de Compensação)
+*   **Produtor**: TR.HW.Payment
+*   **Consumidor**: TR.API.Reservation (Handler de Compensação)
 *   **Payload Schema (JSON):**
 ```json
 {
