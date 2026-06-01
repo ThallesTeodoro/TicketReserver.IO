@@ -41,8 +41,6 @@ A estrutura interna de namespaces dentro de um componente Hexagonal deve respeit
     3. Testes de borda (valores limites, estouro de dados).
     4. Validação de nulidade, strings vazias ou coleções vazias.
 
----
-
 ## 6. Fluxo de Desenvolvimento Estrito de uma Feature
 
 Sempre que a IA receber a tarefa de criar uma nova funcionalidade, ela deve guiar o desenvolvimento sequencialmente através destes 7 passos, sem pular nenhum:
