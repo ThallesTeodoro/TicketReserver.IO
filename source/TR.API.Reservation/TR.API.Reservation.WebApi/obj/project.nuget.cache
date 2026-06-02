@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "1ypj0LNAkVU=",
+  "success": true,
+  "projectFilePath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.WebApi/TR.API.Reservation.WebApi.csproj",
+  "expectedPackageFiles": [
+    "/home/thallesteodoro/.nuget/packages/microsoft.aspnetcore.openapi/9.0.5/microsoft.aspnetcore.openapi.9.0.5.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}

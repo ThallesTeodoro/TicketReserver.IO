@@ -1,13 +1,13 @@
 # Backlog Geral Detalhado - TicketReserver.IO (backlog.md)
 
 ## Epic 01: Fundação de Infraestrutura & Observabilidade (Sprint 01)
-- [ ] **Task 01.1:** Setup do `docker-compose` com Postgres (databases: `reservation`, `payment`, `ticketing`).
-- [ ] **Task 01.2:** Configuração do Apache Kafka (KRaft mode) e AKHQ para gestão de tópicos.
-- [ ] **Task 01.3:** Setup do Pipeline de Telemetria (OTel Collector -> Loki, Tempo, Prometheus).
-- [ ] **Task 01.4:** Provisionamento automático de Dashboards do Grafana (Estado da Infra e Logs).
+- [x] **Task 01.1:** Setup do `docker-compose` com Postgres (databases: `reservation`, `payment`, `ticketing`).
+- [x] **Task 01.2:** Configuração do Apache Kafka (KRaft mode) e AKHQ para gestão de tópicos.
+- [x] **Task 01.3:** Setup do Pipeline de Telemetria (OTel Collector -> Loki, Tempo, Prometheus).
+- [x] **Task 01.4:** Provisionamento automático de Dashboards do Grafana (Estado da Infra e Logs).
 
-## Epic 02: Core de Reservas & Idempotência de Borda (Sprint 02)
-- [ ] **Task 02.1:** Criação da Solução .NET e Projeto `TR.API.Reservation` (Minimal API).
+## Epic 02: Core de Reservas & Idempotência de Borda (Sprint 02) [EM ANDAMENTO]
+- [/] **Task 02.1:** Criação da Solução .NET e Projeto `TR.API.Reservation` (Minimal API).
 - [ ] **Task 02.2:** Implementação do Middleware de Idempotência com Redis (Padrão: `idempotency:reservation:{key}`).
 - [ ] **Task 02.3:** [Fluxo Hexagonal] Domínio: Entidade `Reservation` rica e Interface `IReservationRepository`.
 - [ ] **Task 02.4:** [Fluxo Hexagonal] Infra: Repositório com Dapper e Transação Atômica (Reservation + OutboxTable).

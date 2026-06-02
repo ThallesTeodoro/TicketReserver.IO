@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "Q2EC3rLHwDM=",
+  "success": true,
+  "projectFilePath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Infrastructure/TR.API.Reservation.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "/home/thallesteodoro/.nuget/packages/dapper/2.1.79/dapper.2.1.79.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/9.0.0/microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/microsoft.extensions.logging.abstractions/9.0.0/microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/npgsql/10.0.3/npgsql.10.0.3.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/pipelines.sockets.unofficial/2.2.16/pipelines.sockets.unofficial.2.2.16.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/stackexchange.redis/2.13.17/stackexchange.redis.2.13.17.nupkg.sha512",
+    "/home/thallesteodoro/.nuget/packages/system.io.hashing/10.0.2/system.io.hashing.10.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,207 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Infrastructure/TR.API.Reservation.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Application/TR.API.Reservation.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Application/TR.API.Reservation.Application.csproj",
+        "projectName": "TR.API.Reservation.Application",
+        "projectPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Application/TR.API.Reservation.Application.csproj",
+        "packagesPath": "/home/thallesteodoro/.nuget/packages/",
+        "outputPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/thallesteodoro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj": {
+                "projectPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/thallesteodoro/.asdf/installs/dotnet/9.0.300/sdk/9.0.300/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj",
+        "projectName": "TR.API.Reservation.Domain",
+        "projectPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj",
+        "packagesPath": "/home/thallesteodoro/.nuget/packages/",
+        "outputPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/thallesteodoro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/thallesteodoro/.asdf/installs/dotnet/9.0.300/sdk/9.0.300/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Infrastructure/TR.API.Reservation.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Infrastructure/TR.API.Reservation.Infrastructure.csproj",
+        "projectName": "TR.API.Reservation.Infrastructure",
+        "projectPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Infrastructure/TR.API.Reservation.Infrastructure.csproj",
+        "packagesPath": "/home/thallesteodoro/.nuget/packages/",
+        "outputPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/thallesteodoro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Application/TR.API.Reservation.Application.csproj": {
+                "projectPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Application/TR.API.Reservation.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.79, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.13.17, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/thallesteodoro/.asdf/installs/dotnet/9.0.300/sdk/9.0.300/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
