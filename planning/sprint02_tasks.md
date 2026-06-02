@@ -9,8 +9,8 @@
 - [x] **1.6:** Configurar `appsettings.json` e adicionar bibliotecas base (Dapper, Redis, etc) nos projetos corretos.
 
 ## Task 02: Idempotência de Borda
-- [ ] **2.1:** Implementar `IdempotencyMiddleware`.
-- [ ] **2.2:** Configurar registro de chaves no Redis com padrão `idempotency:reservation:{key}` e TTL de 24h.
+- [x] **2.1:** Implementar `IdempotencyMiddleware`.
+- [x] **2.2:** Configurar registro de chaves no Redis com padrão `idempotency:reservation:{key}` e TTL de 24h.
 
 ## Task 03: Domínio (Hexagonal Step 1-2)
 - [ ] **3.1:** Criar Entidade `Reservation` (Rich Domain Model).
