@@ -7,6 +7,7 @@
 *   `UserId` (UUID)
 *   `EventId` (UUID)
 *   `SeatNumber` (VARCHAR(10))
+*   `Price` (NUMERIC(10,2))
 *   `Status` (VARCHAR(20)) -> Valores: `Pendente`, `Confirmada`, `Cancelada`
 *   `CreatedAt` (TIMESTAMP)
 

@@ -6,7 +6,9 @@ Este guia de estilo é a lei absoluta de codificação para o ecossistema **Tick
 *   **Arquitetura Hexagonal (Ports & Adapters):** O núcleo da aplicação (Domain e Application) deve ser totalmente agnóstico de tecnologias externas. O mundo externo só se comunica com a aplicação através de *Ports* (Interfaces) e *Adapters* (Implementações de Infraestrutura).
 *   **CQRS Lite:** Separe claramente as intenções de escrita (Commands) das intenções de leitura (Queries). Não há necessidade de infraestrutura separada de banco para isso; apenas separe as classes e manipuladores (`Handlers`/`UseCases`).
 *   **Padrão Repository com Dapper:** Toda persistência e consulta ao banco de dados PostgreSQL deve utilizar o **Dapper** (Micro-ORM) implementando a interface do repositório correspondente.
-*   **Abordagem de APIs:** Priorize a utilização de **Minimal APIs** em vez de controllers tradicionais.
+*   **Abordagem de APIs:** Priorize a utilização de **Minimal APIs** gerenciadas pela biblioteca **Carter**.
+    *   Os endpoints devem ser segregados por contexto em classes dentro da pasta `./Endpoints` do projeto WebApi.
+    *   Cada classe de endpoint deve herdar de `CarterModule` (Ex: `public class ReservationEndpoints : CarterModule`).
 *   **Rede e Proteção:** A única API exposta publicamente via Kubernetes Ingress/Gateway será a `TR.API.Reservation`. Todos os outros workers e componentes de infraestrutura estarão protegidos dentro da rede interna do cluster.
 
 ## 2. Nomenclatura e Namespaces (Padrão TR)
@@ -18,6 +20,8 @@ Todos os projetos, soluções e namespaces devem seguir a convenção de nomencl
 A estrutura interna de namespaces dentro de um componente Hexagonal deve respeitar:
 *   `TR.[Tipo].[Componente].Domain`
 *   `TR.[Tipo].[Componente].Application`
+    *   A camada `Application` deve ser organizada por casos de uso. Cada funcionalidade deve ter sua própria pasta dentro de `./UseCases/` (Ex: `./UseCases/CreateReservation/`).
+    *   Dentro desta pasta, devem residir o `Command`/`Query`, `UseCase` (Handler), `Mapper` e `Output` relacionados àquela funcionalidade.
 *   `TR.[Tipo].[Componente].Infrastructure`
 
 ## 3. Práticas de Código e Mapeamento

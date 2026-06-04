@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "TR.API.Reservation.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/TR.API.Reservation.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TR.API.Reservation.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "TR.API.Reservation.Domain/1.0.0": {
+      "type": "project",
+      "path": "../TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj",
+      "msbuildProject": "../TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "TR.API.Reservation.Domain >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "/home/thallesteodoro/.nuget/packages/": {}
@@ -31,7 +50,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj": {
+              "projectPath": "/home/thallesteodoro/development/ticket-reservation-pdi/source/TR.API.Reservation/TR.API.Reservation.Domain/TR.API.Reservation.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
