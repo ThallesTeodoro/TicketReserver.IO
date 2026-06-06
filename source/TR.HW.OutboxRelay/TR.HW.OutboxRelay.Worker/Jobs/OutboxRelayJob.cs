@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Hangfire;
 using TR.HW.OutboxRelay.Application.UseCases.RelayMessages;
+using TR.HW.OutboxRelay.Domain;
 
 namespace TR.HW.OutboxRelay.Worker.Jobs;
 
@@ -20,7 +21,9 @@ public class OutboxRelayJob
     [AutomaticRetry(Attempts = 3)]
     public async Task ExecuteAsync()
     {
+        using var activity = Telemetry.ActivitySource.StartActivity("OutboxRelayJob.Execute");
         var sw = Stopwatch.StartNew();
+        
         _logger.LogInformation("Outbox Relay Job started at: {Time}", DateTimeOffset.Now);
         
         try
@@ -30,6 +33,7 @@ public class OutboxRelayJob
         catch (Exception ex)
         {
             _logger.LogError(ex, "Critical error during Outbox Relay Job execution.");
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw;
         }
         finally

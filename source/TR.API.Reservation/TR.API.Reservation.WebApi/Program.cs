@@ -1,5 +1,8 @@
 using Carter;
 using Npgsql;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Polly;
 using StackExchange.Redis;
 using TR.API.Reservation.Application.UseCases.CreateReservation;
@@ -11,6 +14,29 @@ using TR.API.Reservation.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Telemetry Setup (OpenTelemetry)
+const string ServiceName = "TR.API.Reservation";
+var otelEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://localhost:4317";
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing.AddSource(ServiceName)
+               .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
+               .AddAspNetCoreInstrumentation()
+               .AddHttpClientInstrumentation()
+               .AddNpgsql()
+               .AddOtlpExporter(opt => opt.Endpoint = new Uri(otelEndpoint));
+    });
+
+builder.Logging.AddOpenTelemetry(logging =>
+{
+    logging.IncludeFormattedMessage = true;
+    logging.IncludeScopes = true;
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName));
+    logging.AddOtlpExporter(opt => opt.Endpoint = new Uri(otelEndpoint));
+});
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 
@@ -21,6 +47,11 @@ builder.Services.AddNpgsqlDataSource(postgresConnectionString);
 // Redis Setup
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddNpgSql(postgresConnectionString)
+    .AddRedis(redisConnectionString);
 
 // Resilience (Polly)
 builder.Services.AddResiliencePipeline("default", pipelineBuilder =>
@@ -57,6 +88,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+
+// Health Check Endpoints
+app.MapHealthChecks("/healthz");
 
 // Custom Middlewares
 app.UseMiddleware<IdempotencyMiddleware>();

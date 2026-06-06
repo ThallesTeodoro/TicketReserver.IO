@@ -254,6 +254,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "AspNetCore.HealthChecks.NpgSql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "AspNetCore.HealthChecks.Redis": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Carter": {
               "target": "Package",
               "version": "[9.0.0, )"
@@ -269,6 +277,26 @@
             "Npgsql.DependencyInjection": {
               "target": "Package",
               "version": "[10.0.3, )"
+            },
+            "Npgsql.OpenTelemetry": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            },
+            "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+              "target": "Package",
+              "version": "[1.15.3, )"
+            },
+            "OpenTelemetry.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[1.15.3, )"
+            },
+            "OpenTelemetry.Instrumentation.AspNetCore": {
+              "target": "Package",
+              "version": "[1.15.2, )"
+            },
+            "OpenTelemetry.Instrumentation.Http": {
+              "target": "Package",
+              "version": "[1.15.1, )"
             }
           },
           "imports": [

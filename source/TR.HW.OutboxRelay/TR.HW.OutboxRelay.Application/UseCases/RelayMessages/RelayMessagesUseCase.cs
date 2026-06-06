@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using TR.HW.OutboxRelay.Application.Ports;
+using TR.HW.OutboxRelay.Domain;
 
 namespace TR.HW.OutboxRelay.Application.UseCases.RelayMessages;
 
@@ -21,17 +23,26 @@ public class RelayMessagesUseCase
 
     public async Task ExecuteAsync()
     {
+        using var activity = Telemetry.ActivitySource.StartActivity("RelayMessagesUseCase.Execute");
+        
         var messages = await _outboxPort.GetPendingMessagesAsync(50);
+        var messageList = messages.ToList();
 
-        if (!messages.Any())
+        if (!messageList.Any())
         {
             return;
         }
 
-        _logger.LogInformation("Processing {Count} outbox messages.", messages.Count());
+        activity?.SetTag("messages.count", messageList.Count);
+        _logger.LogInformation("Processing {Count} outbox messages.", messageList.Count);
 
-        foreach (var message in messages)
+        foreach (var message in messageList)
         {
+            using var messageActivity = Telemetry.ActivitySource.StartActivity("ProcessMessage");
+            messageActivity?.SetTag("message.id", message.Id);
+            messageActivity?.SetTag("message.event_type", message.EventType);
+            messageActivity?.SetTag("message.correlation_id", message.CorrelationId);
+
             try
             {
                 await _kafkaPort.PublishAsync(
@@ -46,6 +57,7 @@ public class RelayMessagesUseCase
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing outbox message {Id}.", message.Id);
+                messageActivity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             }
         }
     }

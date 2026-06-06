@@ -17,8 +17,8 @@
 - [x] **3.4:** Implementar remoção segura das mensagens processadas.
 
 ## Task 04: Observabilidade e Logs
-- [ ] **4.1:** Configurar Exportador OTLP para Traces e Logs.
-- [ ] **4.2:** Adicionar logs estruturados informando volume de mensagens processadas e falhas.
+- [x] **4.1:** Configurar Exportador OTLP para Traces e Logs.
+- [x] **4.2:** Adicionar logs estruturados informando volume de mensagens processadas e falhas.
 
 ## Task 05: Validação Integrada
 - [ ] **5.1:** Teste de ponta a ponta: Criar reserva via API -> Verificar persistência -> Aguardar Relay -> Verificar mensagem no Kafka via AKHQ.
