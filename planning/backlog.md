@@ -6,16 +6,16 @@
 - [x] **Task 01.3:** Setup do Pipeline de Telemetria (OTel Collector -> Loki, Tempo, Prometheus).
 - [x] **Task 01.4:** Provisionamento automático de Dashboards do Grafana (Estado da Infra e Logs).
 
-## Epic 02: Core de Reservas & Idempotência de Borda (Sprint 02) [EM ANDAMENTO]
-- [/] **Task 02.1:** Criação da Solução .NET e Projeto `TR.API.Reservation` (Minimal API).
-- [ ] **Task 02.2:** Implementação do Middleware de Idempotência com Redis (Padrão: `idempotency:reservation:{key}`).
-- [ ] **Task 02.3:** [Fluxo Hexagonal] Domínio: Entidade `Reservation` rica e Interface `IReservationRepository`.
-- [ ] **Task 02.4:** [Fluxo Hexagonal] Infra: Repositório com Dapper e Transação Atômica (Reservation + OutboxTable).
-- [ ] **Task 02.5:** [Fluxo Hexagonal] Delivery: Use Case de Criação de Reserva e Endpoint.
-- [ ] **Task 02.6:** Testes Unitários: Regras de negócio, duplicidade e falhas de persistência.
+## Epic 02: Core de Reservas & Idempotência de Borda (Sprint 02) [CONCLUÍDA]
+- [x] **Task 02.1:** Criação da Solução .NET e Projeto `TR.API.Reservation` (Minimal API).
+- [x] **Task 02.2:** Implementação do Middleware de Idempotência com Redis (Padrão: `idempotency:reservation:{key}`).
+- [x] **Task 02.3:** [Fluxo Hexagonal] Domínio: Entidade `Reservation` rica e Interface `IReservationRepository`.
+- [x] **Task 02.4:** [Fluxo Hexagonal] Infra: Repositório com Dapper e Transação Atômica (Reservation + OutboxTable).
+- [x] **Task 02.5:** [Fluxo Hexagonal] Delivery: Use Case de Criação de Reserva e Endpoint.
+- [x] **Task 02.6:** Testes Unitários: Regras de negócio, duplicidade e falhas de persistência.
 
-## Epic 03: Resiliência Assíncrona & Outbox Pattern (Sprint 03)
-- [ ] **Task 03.1:** Implementação do Worker `TR.HW.OutboxRelay`.
+## Epic 03: Resiliência Assíncrona & Outbox Pattern (Sprint 03) [EM ANDAMENTO]
+- [ ] **Task 03.1:** Implementação do Worker `TR.HW.OutboxRelay` com Hangfire.
 - [ ] **Task 03.2:** Lógica de Polling/Publishing com propagação de `TraceId` nos Headers do Kafka.
 - [ ] **Task 03.3:** Implementação do Worker `TR.HW.Payment` (Consumer).
 - [ ] **Task 03.4:** Gestão Manual de Offsets e Idempotência Transacional no Banco de Pagamentos.
