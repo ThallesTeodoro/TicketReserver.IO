@@ -13,9 +13,14 @@
 
 ### Tabela: `OutboxMessages`
 *   `Id` (UUID, Primary Key)
-*   `CorrelationId` (UUID) -> TraceId do OpenTelemetry para rastreabilidade ponta-a-ponta
-*   `EventType` (VARCHAR(100)) -> Ex: `reservation.created`
+*   `CorrelationId` (VARCHAR(50)) -> TraceId do OpenTelemetry
+*   `EventName` (VARCHAR(100)) -> Nome da classe do evento (ex: `ReservationCreated`)
+*   `EventType` (VARCHAR(100)) -> Tipo do evento / Tópico (ex: `reservation.created`)
 *   `Payload` (JSONB)
+*   `Status` (SMALLINT) -> Enum: `1: Pendente`, `2: EmProcessamento`, `3: Processado`, `4: ErroPermanente`
+*   `Attempts` (INT) -> Contador de tentativas de envio
+*   `LastAttemptAt` (TIMESTAMP, Nullable)
+*   `ErrorReason` (TEXT, Nullable)
 *   `CreatedAt` (TIMESTAMP)
 *   `ProcessedAt` (TIMESTAMP, Nullable)
 

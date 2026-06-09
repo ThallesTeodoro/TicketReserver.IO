@@ -5,18 +5,21 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Polly;
-using TR.HW.OutboxRelay.Application.Ports;
-using TR.HW.OutboxRelay.Application.UseCases.RelayMessages;
+using TR.HW.OutboxRelay.Application.Common.Config;
+using TR.HW.OutboxRelay.Application.DependencyInjection;
 using TR.HW.OutboxRelay.Domain;
-using TR.HW.OutboxRelay.Infrastructure.Adapters.Data;
-using TR.HW.OutboxRelay.Infrastructure.Adapters.Kafka;
+using TR.HW.OutboxRelay.Infrastructure.DependencyInjection;
+using TR.HW.OutboxRelay.Worker.Config;
 using TR.HW.OutboxRelay.Worker.Jobs;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Telemetry Setup (OpenTelemetry)
-var otelEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://localhost:4317";
+// Infrastructure Settings
+var infraSettings = new InfrastructureSettings();
+builder.Configuration.GetSection(InfrastructureSettings.SectionName).Bind(infraSettings);
+builder.Services.Configure<InfrastructureSettings>(builder.Configuration.GetSection(InfrastructureSettings.SectionName));
 
+// Telemetry Setup (OpenTelemetry)
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing =>
     {
@@ -24,7 +27,7 @@ builder.Services.AddOpenTelemetry()
                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Telemetry.ServiceName))
                .AddHttpClientInstrumentation()
                .AddNpgsql()
-               .AddOtlpExporter(opt => opt.Endpoint = new Uri(otelEndpoint));
+               .AddOtlpExporter(opt => opt.Endpoint = new Uri(infraSettings.OtelExporterEndpoint));
     });
 
 builder.Logging.AddOpenTelemetry(logging =>
@@ -32,14 +35,11 @@ builder.Logging.AddOpenTelemetry(logging =>
     logging.IncludeFormattedMessage = true;
     logging.IncludeScopes = true;
     logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Telemetry.ServiceName));
-    logging.AddOtlpExporter(opt => opt.Endpoint = new Uri(otelEndpoint));
+    logging.AddOtlpExporter(opt => opt.Endpoint = new Uri(infraSettings.OtelExporterEndpoint));
 });
 
 // DB Setup
-var postgresConnectionString = builder.Configuration.GetConnectionString("Postgres") 
-    ?? throw new InvalidOperationException("Postgres connection string not found.");
-
-builder.Services.AddNpgsqlDataSource(postgresConnectionString);
+builder.Services.AddNpgsqlDataSource(infraSettings.PostgresConnection);
 
 // Hangfire Setup
 builder.Services.AddHangfire(config =>
@@ -47,22 +47,19 @@ builder.Services.AddHangfire(config =>
     config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
           .UseSimpleAssemblyNameTypeSerializer()
           .UseRecommendedSerializerSettings()
-          .UsePostgreSqlStorage(c => c.UseNpgsqlConnection(postgresConnectionString));
+          .UsePostgreSqlStorage(c => c.UseNpgsqlConnection(infraSettings.PostgresConnection));
 });
 
 builder.Services.AddHangfireServer();
 
 // Health Checks
 builder.Services.AddHealthChecks()
-    .AddNpgSql(postgresConnectionString)
-    .AddRedis(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379");
+    .AddNpgSql(infraSettings.PostgresConnection)
+    .AddRedis(infraSettings.RedisConnection);
 
-// Ports & Adapters
-builder.Services.AddSingleton<IKafkaPort, KafkaAdapter>();
-builder.Services.AddScoped<IOutboxPort, OutboxRepository>();
-
-// Application Services
-builder.Services.AddScoped<RelayMessagesUseCase>();
+// Layers Setup
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Jobs
 builder.Services.AddScoped<OutboxRelayJob>();
@@ -84,12 +81,12 @@ var host = builder.Build();
 using (var scope = host.Services.CreateScope())
 {
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-    var cronExpression = builder.Configuration["OutboxRelay:CronExpression"] ?? "*/15 * * * * *";
+    var outboxSettings = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<OutboxSettings>>().Value;
     
     recurringJobManager.AddOrUpdate<OutboxRelayJob>(
         "outbox-relay",
         job => job.ExecuteAsync(),
-        cronExpression
+        outboxSettings.CronExpression
     );
 }
 

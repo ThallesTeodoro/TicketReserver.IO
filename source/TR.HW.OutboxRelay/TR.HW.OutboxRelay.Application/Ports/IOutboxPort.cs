@@ -8,12 +8,20 @@ namespace TR.HW.OutboxRelay.Application.Ports;
 public interface IOutboxPort
 {
     /// <summary>
-    /// Obtém as mensagens pendentes para processamento.
+    /// Obtém as mensagens elegíveis para processamento e realiza o lock (transição para EmProcessamento).
     /// </summary>
-    Task<IEnumerable<OutboxMessage>> GetPendingMessagesAsync(int limit);
+    /// <param name="limit">Quantidade máxima de mensagens.</param>
+    /// <param name="timeoutLimit">Data limite para considerar uma mensagem em processamento como 'travada'.</param>
+    /// <returns>Coleção de mensagens bloqueadas para este worker.</returns>
+    Task<IEnumerable<OutboxMessage>> GetAndLockEligibleMessagesAsync(int limit, DateTime timeoutLimit);
 
     /// <summary>
-    /// Remove uma mensagem processada do banco.
+    /// Marca a mensagem como Processada.
     /// </summary>
-    Task DeleteMessageAsync(Guid id);
+    Task MarkAsProcessedAsync(Guid id);
+
+    /// <summary>
+    /// Marca falha no processamento, incrementando tentativas e podendo marcar como ErroPermanente.
+    /// </summary>
+    Task MarkAsFailedAsync(Guid id, string errorReason, bool permanent);
 }

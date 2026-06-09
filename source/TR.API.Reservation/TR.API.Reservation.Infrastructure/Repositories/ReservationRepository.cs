@@ -5,6 +5,8 @@ using Npgsql;
 using Polly;
 using Polly.Registry;
 using TR.API.Reservation.Domain.Entities;
+using TR.API.Reservation.Domain.Enums;
+using TR.API.Reservation.Domain.Events;
 using TR.API.Reservation.Domain.Repositories;
 using ReservationEntity = TR.API.Reservation.Domain.Entities.Reservation;
 
@@ -45,26 +47,29 @@ public class ReservationRepository : IReservationRepository
                     reservation.CreatedAt
                 }, transaction);
 
-                const string outboxSql = @"
-                    INSERT INTO OutboxMessages (Id, CorrelationId, EventType, Payload, CreatedAt)
-                    VALUES (@Id, @CorrelationId, @EventType, @Payload, @CreatedAt)";
+                var @event = new ReservationCreated(
+                    reservation.Id,
+                    reservation.UserId,
+                    reservation.EventId,
+                    reservation.SeatNumber,
+                    reservation.Price,
+                    reservation.CreatedAt);
 
-                var payload = JsonSerializer.Serialize(new
-                {
-                    reservationId = reservation.Id,
-                    userId = reservation.UserId,
-                    eventId = reservation.EventId,
-                    seatNumber = reservation.SeatNumber,
-                    ticketPrice = reservation.Price,
-                    createdAt = reservation.CreatedAt
-                });
+                const string outboxSql = @"
+                    INSERT INTO OutboxMessages (Id, CorrelationId, EventName, EventType, Payload, Status, Attempts, CreatedAt)
+                    VALUES (@Id, @CorrelationId, @EventName, @EventType, @Payload, @Status, @Attempts, @CreatedAt)";
+
+                var payload = JsonSerializer.Serialize(@event);
 
                 await connection.ExecuteAsync(outboxSql, new
                 {
                     Id = Guid.NewGuid(),
                     CorrelationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString(),
-                    EventType = "reservation.created",
+                    EventName = nameof(ReservationCreated),
+                    EventType = "reservation.created", // Tópico Kafka
                     Payload = payload,
+                    Status = (short)OutboxStatus.Pendente,
+                    Attempts = 0,
                     CreatedAt = DateTime.UtcNow
                 }, transaction);
 
@@ -83,7 +88,7 @@ public class ReservationRepository : IReservationRepository
         return await _resiliencePipeline.ExecuteAsync(async ct =>
         {
             await using var connection = await _dataSource.OpenConnectionAsync(ct);
-            const string sql = "SELECT * FROM Reservations WHERE Id = @Id";
+            const string sql = "SELECT Id, UserId, EventId, SeatNumber, Price, Status, CreatedAt FROM Reservations WHERE Id = @Id";
             return await connection.QueryFirstOrDefaultAsync<ReservationEntity>(sql, new { Id = id });
         });
     }
