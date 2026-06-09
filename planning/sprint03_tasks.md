@@ -18,25 +18,25 @@
 - [x] **4.1:** Configurar Exportador OTLP para Traces e Logs.
 - [x] **4.2:** Adicionar instrumentação nos Use Cases.
 
-## Task 05: Contratos de Eventos e Status
-- [ ] **5.1:** Criar enum `OutboxStatus` (Pendente=1, EmProcessamento=2, Processado=3, ErroPermanente=4).
-- [ ] **5.2:** Criar interface `IEvent` e evento `ReservationCreated`.
-- [ ] **5.3:** Garantir que o domínio da API e do Worker compartilhem ou repliquem estes contratos.
+## Task 05: Contratos de Eventos e Status [CONCLUÍDA]
+- [x] **5.1:** Criar enum `OutboxStatus` (Pendente=1, EmProcessamento=2, Processado=3, ErroPermanente=4).
+- [x] **5.2:** Criar interface `IEvent` e evento `ReservationCreated`.
+- [x] **5.3:** Garantir que o domínio da API e do Worker compartilhem ou repliquem estes contratos.
 
-## Task 06: Evolução do Schema e Modelos
-- [ ] **6.1:** Atualizar `03-data-models.md` com as novas colunas (`Status` as SMALLINT, `EventName`, `Attempts`, etc).
-- [ ] **6.2:** Criar script de migração/ajuste para a tabela `OutboxMessages`.
-- [ ] **6.3:** Atualizar records de `OutboxMessage` no C# para refletir o novo banco.
+## Task 06: Evolução do Schema e Modelos [CONCLUÍDA]
+- [x] **6.1:** Atualizar `03-data-models.md` com as novas colunas (`Status` as SMALLINT, `EventName`, `Attempts`, etc).
+- [x] **6.2:** Criar script de migração/ajuste para a tabela `OutboxMessages`.
+- [x] **6.3:** Atualizar records de `OutboxMessage` no C# para refletir o novo banco.
 
-## Task 07: Refatoração da API (Publisher)
-- [ ] **7.1:** Atualizar `ReservationRepository` para preencher os novos campos no `INSERT` do Outbox.
-- [ ] **7.2:** Garantir que o `EventName` seja persistido corretamente.
+## Task 07: Refatoração da API (Publisher) [CONCLUÍDA]
+- [x] **7.1:** Atualizar `ReservationRepository` para preencher os novos campos no `INSERT` do Outbox.
+- [x] **7.2:** Garantir que o `EventName` seja persistido corretamente.
 
-## Task 08: Refatoração do Worker (State Machine Relay)
-- [ ] **8.1:** Alterar polling para buscar apenas mensagens elegíveis (`Pendente` ou timeout em `EmProcessamento`).
-- [ ] **8.2:** Implementar transição para `EmProcessamento` com concorrência segura.
-- [ ] **8.3:** Implementar conclusão para `Processado` após confirmação do Kafka.
-- [ ] **8.4:** Implementar lógica de retry incremental e marcação de `ErroPermanente`.
+## Task 08: Refatoração do Worker (State Machine Relay) [CONCLUÍDA]
+- [x] **8.1:** Alterar polling para buscar apenas mensagens elegíveis (`Pendente` ou timeout em `EmProcessamento`).
+- [x] **8.2:** Implementar transição para `EmProcessamento` com concorrência segura.
+- [x] **8.3:** Implementar conclusão para `Processado` após confirmação do Kafka.
+- [x] **8.4:** Implementar lógica de retry incremental e marcação de `ErroPermanente`.
 
 ## Task 09: Validação Integrada e Resiliência
 - [ ] **9.1:** Validar fluxo de sucesso: Mensagem fica como `Processado` no banco.
