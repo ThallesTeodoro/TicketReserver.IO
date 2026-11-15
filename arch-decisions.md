@@ -14,15 +14,15 @@ flowchart TB
 
     %% ================= DOMÍNIO DE EVENTOS & BUSCA =================
     subgraph SVC_EVENTOS [Microserviço de Catálogo]
-        Ingress -- "CRUD" --> APIEventos["API Eventos"]
-        APIEventos <--> RedisCache[("Redis (Cache)")]
-        APIEventos <--> EventosDB[("Eventos DB")]
+        Ingress -- "CRUD" --> API_Eventos["TR.API.Events"]
+        API_Eventos <--> RedisCache[("Redis (Cache)")]
+        API_Eventos <--> EventosDB[("Eventos DB")]
         EventosDB -- "CDC" --> Debezium["Debezium"]
     end
 
     subgraph SVC_BUSCA [Microserviço de Busca]
-        Ingress -- "SEARCH" --> APISearch["API Search"]
-        APISearch <-- "Consulta" --> SearchDB[("Search DB \n(ElasticSearch)")]
+        Ingress -- "SEARCH" --> API_Search["TR.API.Search"]
+        API_Search <-- "Consulta" --> SearchDB[("Search DB \n(ElasticSearch)")]
         HWRepl["Worker: Replicação"] -- "Atualiza" --> SearchDB
     end
 
