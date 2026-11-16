@@ -28,7 +28,7 @@ A solução possui isolamento estrito entre quatro camadas e a suíte de testes:
 
 ## 2. Stack Tecnológica (.NET Ecosystem)
 
-*   **Linguagem & Runtime:** C# 12 / .NET 8 (com `<Nullable>enable</Nullable>`).
+*   **Linguagem & Runtime:** C# / .NET 10 (com `<Nullable>enable</Nullable>`).
 *   **API & Endpoints:** ASP.NET Core Minimal APIs gerenciadas via **Carter** (`CarterModule`).
 *   **CQRS:** CQRS Lite nativo em C# (sem dependências externas).
 *   **Validação de Entrada:** FluentValidation (validação de contratos HTTP e formato sintático).
@@ -71,29 +71,48 @@ Conforme formalizado nas decisões arquiteturais (`.agents/specification/archite
 
 ---
 
-## 4. Estrutura de Solução e Projetos
+## 4. Estrutura de Solução, Componentes e Namespaces
 
-A nomenclatura padrão segue o prefixo do produto (`TicketReserver` ou `TR.`):
+A nomenclatura padrão do ecossistema segue rigorosamente o formato de namespace:
+`TR.[Tipo].[Descricao]`
+Onde `[Tipo]` pode ser:
+*   `API`: APIs HTTP públicas (ex: `TR.API.Events`, `TR.API.Search`, `TR.API.Reservation`)
+*   `HW`: Heavy Workers / Background Services (ex: `TR.HW.Payment`, `TR.HW.Ticketing`, `TR.HW.ResTimeout`, `TR.HW.Refund`)
+*   `KFK`: Componentes ou conectores dedicados de streaming Kafka
+
+Cada componente possui sua pasta raiz com o nome do seu namespace base, contendo sua solução (.sln), Dockerfile e arquivo `docker-compose.yml` fragmentado:
 
 ```text
-TicketReserver.Reservation/
-├── source/
-│   ├── TicketReserver.Reservation.Domain/            # Entidades ricas, Value Objects, Enums, Exceptions
-│   │   ├── Contracts/Persistence/                    # IRepository<T>, IUnitOfWork
-│   │   └── Entities/                                 # Entidades com invariantes e IReadOnlyCollection
-│   ├── TicketReserver.Reservation.Application/       # Casos de uso em Vertical Slices
-│   │   ├── Common/Messaging/                         # ICommand, IQuery, ICommandHandler, IQueryHandler
-│   │   └── {Aggregate}/{UseCase}/                    # Command/Query, Handler, Validator, Mappings
-│   ├── TicketReserver.Reservation.Infrastructure/    # EF Core, Repositories, Dapper, Kafka, Redis
-│   │   ├── Messaging/                                # Producers, Consumers resilientes, OutboxPublisher
-│   │   └── Persistence/                              # DbContext, Configurations (Fluent API), Repositories
-│   └── TicketReserver.Reservation.WebApi/            # CarterModules, Program.cs, JsonResponse, Middlewares
-│       ├── Contracts/                                # JsonResponse<TData, TError>
-│       ├── Endpoints/                                # CarterModules por agregado
-│       └── Middlewares/                              # ExceptionHandlerMiddleware global
-└── tests/
-    └── TicketReserver.Reservation.UnitTests/         # Testes AAA com xUnit, Moq e FluentAssertions
-        └── Application/{Aggregate}/{UseCase}Tests.cs
+ticket-reservation-pdi/
+├── docker-compose.yml                                # Compose raiz que agrega serviços via `include`
+├── TR.API.Events/                                    # Pasta do componente
+│   ├── TR.API.Events.sln                             # Solução dedicada .NET 10
+│   ├── Dockerfile                                    # Build multi-stage .NET 10
+│   ├── docker-compose.yml                            # Compose fragmentado do serviço
+│   ├── source/
+│   │   ├── TR.API.Events.Domain/                     # Entidades ricas, Value Objects, Enums, Exceptions
+│   │   │   ├── Contracts/Persistence/                # IRepository<T>, IUnitOfWork
+│   │   │   └── Entities/                             # Entidades com invariantes e IReadOnlyCollection
+│   │   ├── TR.API.Events.Application/                # Casos de uso em Vertical Slices
+│   │   │   ├── Common/Messaging/                     # ICommand, IQuery, ICommandHandler, IQueryHandler
+│   │   │   └── {Aggregate}/{UseCase}/                # Command/Query, Handler, Validator, Mappings
+│   │   ├── TR.API.Events.Infrastructure/             # EF Core, Repositories, Dapper, Postgres
+│   │   │   ├── Messaging/                            # Producers, Consumers, OutboxPublisher
+│   │   │   └── Persistence/                          # DbContext, Configurations (Fluent API), Repositories
+│   │   └── TR.API.Events.WebApi/                     # CarterModules, Program.cs, JsonResponse, Middlewares
+│   │       ├── Contracts/                            # JsonResponse<TData, TError>
+│   │       ├── Endpoints/                            # CarterModules por agregado
+│   │       └── Middlewares/                          # ExceptionHandlerMiddleware global
+│   └── tests/
+│       └── TR.API.Events.UnitTests/                  # Testes AAA com xUnit, Moq e FluentAssertions
+│           └── Application/{Aggregate}/{UseCase}Tests.cs
+```
+
+### 4.1. Orquestração Modular de Containers (Docker Compose `include`)
+Para evitar um `docker-compose.yml` monolítico e inchado na raiz, cada componente define seu próprio `docker-compose.yml` conectado à rede bridge compartilhada (`ticketreserver-internal-net`). O `docker-compose.yml` da raiz utiliza a diretiva nativa `include:` para agregar todos os módulos:
+```yaml
+include:
+  - ./TR.API.Events/docker-compose.yml
 ```
 
 ---

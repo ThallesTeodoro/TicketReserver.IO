@@ -1,0 +1,18 @@
+services:
+  events-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-events-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - ConnectionStrings__EventsDb=Host=postgres;Port=5432;Database=${POSTGRES_DB:-catalog_events_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${EVENTS_API_PORT:-5001}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net
