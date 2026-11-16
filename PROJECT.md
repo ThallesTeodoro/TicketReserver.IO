@@ -46,7 +46,7 @@ A solução possui isolamento estrito entre quatro camadas e a suíte de testes:
 
 ## 3. Topologia de Microsserviços e Fluxos (System Design)
 
-Conforme formalizado nas decisões arquiteturais (`arch-decisions.md`):
+Conforme formalizado nas decisões arquiteturais (`.agents/specification/architecture/arch-decisions.md`):
 
 ### 3.1. Microsserviços e Domínios
 1. **Catálogo de Eventos (`SVC_EVENTOS`):** API de Eventos (`TR.API.Events`), Redis Cache, Eventos DB (PostgreSQL) e Debezium (CDC) enviando eventos para o Kafka.

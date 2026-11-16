@@ -1,0 +1,22 @@
+# Environment configuration
+.env
+.env.*
+!.env.example
+
+# .NET & Build outputs
+bin/
+obj/
+TestResults/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE & Editors
+.vs/
+.vscode/
+.idea/
+
+# Operating System files
+.DS_Store
+Thumbs.db
