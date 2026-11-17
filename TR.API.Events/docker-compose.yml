@@ -9,10 +9,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
       - ConnectionStrings__EventsDb=Host=postgres;Port=5432;Database=${POSTGRES_DB:-catalog_events_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - ConnectionStrings__Redis=${REDIS_HOST:-redis}:6379,abortConnect=false
     ports:
       - "${EVENTS_API_PORT:-5001}:8080"
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - ticketreserver-internal-net

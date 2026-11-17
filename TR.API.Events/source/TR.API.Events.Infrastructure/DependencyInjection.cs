@@ -5,8 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Npgsql.NameTranslation;
+using StackExchange.Redis;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Enums;
+using TR.API.Events.Infrastructure.Caching;
 using TR.API.Events.Infrastructure.Persistence;
 using TR.API.Events.Infrastructure.Persistence.Repositories;
 
@@ -16,6 +19,9 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("EventsDb")
             ?? "Host=postgres;Port=5432;Database=catalog_events_db;Username=postgres;Password=postgres";
+
+        var redisConnectionString = configuration.GetConnectionString("Redis")
+            ?? "redis:6379,abortConnect=false";
 
         var translator = new NpgsqlNullNameTranslator();
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
@@ -38,6 +44,14 @@ public static class DependencyInjection
             });
         });
 
+        services.AddSingleton<IConnectionMultiplexer>(_ =>
+        {
+            var options = ConfigurationOptions.Parse(redisConnectionString);
+            options.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(options);
+        });
+
+        services.AddSingleton<ICacheService, RedisCacheService>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<EventsDbContext>());
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<ICatalogReadRepository, CatalogReadRepository>();

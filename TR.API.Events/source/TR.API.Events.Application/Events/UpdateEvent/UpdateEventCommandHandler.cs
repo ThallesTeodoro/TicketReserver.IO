@@ -3,6 +3,7 @@ namespace TR.API.Events.Application.Events.UpdateEvent;
 using FluentValidation;
 using TR.API.Events.Application.Common.Messaging;
 using TR.API.Events.Application.Events.Common;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Exceptions;
 using TR.API.Events.Domain.ValueObjects;
@@ -10,6 +11,7 @@ using TR.API.Events.Domain.ValueObjects;
 public sealed class UpdateEventCommandHandler(
     IEventRepository eventRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     IValidator<UpdateEventCommand> validator) : ICommandHandler<UpdateEventCommand, EventResponse>
 {
     public async Task<EventResponse> HandleAsync(UpdateEventCommand command, CancellationToken cancellationToken = default)
@@ -54,6 +56,7 @@ public sealed class UpdateEventCommandHandler(
 
         eventRepository.Update(evt);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.EventById(command.Id), cancellationToken);
 
         return evt.ToResponse();
     }

@@ -1,4 +1,5 @@
 include:
+  - ./docker/redis/docker-compose.yml
   - ./TR.API.Events/docker-compose.yml
 
 services:

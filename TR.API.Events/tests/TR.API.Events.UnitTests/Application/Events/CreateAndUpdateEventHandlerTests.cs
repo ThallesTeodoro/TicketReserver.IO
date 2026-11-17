@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using TR.API.Events.Application.Events.CreateEvent;
 using TR.API.Events.Application.Events.UpdateEvent;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Entities;
 using TR.API.Events.Domain.Exceptions;
@@ -14,6 +15,7 @@ public class CreateAndUpdateEventHandlerTests
 {
     private readonly Mock<IEventRepository> _eventRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ICacheService> _cacheServiceMock = new();
 
     [Fact]
     public async Task CreateEvent_WithValidCommand_ShouldPersistAndReturnResponse()
@@ -97,7 +99,7 @@ public class CreateAndUpdateEventHandlerTests
     }
 
     [Fact]
-    public async Task UpdateEvent_WithValidCommand_ShouldUpdateAndIncrementVersion()
+    public async Task UpdateEvent_WithValidCommand_ShouldUpdateIncrementVersionAndInvalidateCache()
     {
         // Arrange
         var venueId = Guid.NewGuid();
@@ -141,6 +143,7 @@ public class CreateAndUpdateEventHandlerTests
         var handler = new UpdateEventCommandHandler(
             _eventRepositoryMock.Object,
             _unitOfWorkMock.Object,
+            _cacheServiceMock.Object,
             new UpdateEventCommandValidator());
 
         // Act
@@ -154,5 +157,8 @@ public class CreateAndUpdateEventHandlerTests
 
         _eventRepositoryMock.Verify(r => r.Update(existingEvent), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(
+            c => c.RemoveAsync(CacheKeys.EventById(existingEvent.Id), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

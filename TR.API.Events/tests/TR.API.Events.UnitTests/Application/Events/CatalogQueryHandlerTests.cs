@@ -5,6 +5,7 @@ using Moq;
 using TR.API.Events.Application.Events.GetEventById;
 using TR.API.Events.Application.Events.ListEvents;
 using TR.API.Events.Application.Venues.ListVenues;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Exceptions;
 using Xunit;
@@ -12,9 +13,10 @@ using Xunit;
 public class CatalogQueryHandlerTests
 {
     private readonly Mock<ICatalogReadRepository> _readRepositoryMock = new();
+    private readonly Mock<ICacheService> _cacheServiceMock = new();
 
     [Fact]
-    public async Task GetEventById_WhenEventExists_ShouldReturnDetails()
+    public async Task GetEventById_WhenCacheMiss_ShouldFetchFromDbAndSetCache()
     {
         // Arrange
         var eventId = Guid.NewGuid();
@@ -41,17 +43,68 @@ public class CatalogQueryHandlerTests
             now,
             Array.Empty<EventTierReadModel>());
 
+        var cacheKey = CacheKeys.EventById(eventId);
+        _cacheServiceMock
+            .Setup(c => c.GetAsync<EventDetailsReadModel>(cacheKey, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((EventDetailsReadModel?)null);
+
         _readRepositoryMock
             .Setup(r => r.GetEventByIdAsync(eventId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var handler = new GetEventByIdQueryHandler(_readRepositoryMock.Object);
+        var handler = new GetEventByIdQueryHandler(_readRepositoryMock.Object, _cacheServiceMock.Object);
 
         // Act
         var result = await handler.HandleAsync(new GetEventByIdQuery(eventId));
 
         // Assert
         result.Should().Be(expected);
+        _cacheServiceMock.Verify(
+            c => c.SetAsync(cacheKey, expected, CacheKeys.DefaultCatalogTtl, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetEventById_WhenCacheHit_ShouldReturnCachedWithoutQueryingDb()
+    {
+        // Arrange
+        var eventId = Guid.NewGuid();
+        var now = DateTimeOffset.UtcNow;
+        var cachedEvent = new EventDetailsReadModel(
+            eventId,
+            Guid.NewGuid(),
+            "Allianz Parque",
+            "Sao Paulo",
+            "Cached Show",
+            "cached-show",
+            "From Redis",
+            "CONCERT",
+            "SALES_OPEN",
+            now,
+            now.AddDays(5),
+            now.AddDays(10),
+            now.AddDays(11),
+            16,
+            null,
+            4,
+            2,
+            now,
+            now,
+            Array.Empty<EventTierReadModel>());
+
+        var cacheKey = CacheKeys.EventById(eventId);
+        _cacheServiceMock
+            .Setup(c => c.GetAsync<EventDetailsReadModel>(cacheKey, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cachedEvent);
+
+        var handler = new GetEventByIdQueryHandler(_readRepositoryMock.Object, _cacheServiceMock.Object);
+
+        // Act
+        var result = await handler.HandleAsync(new GetEventByIdQuery(eventId));
+
+        // Assert
+        result.Should().Be(cachedEvent);
+        _readRepositoryMock.Verify(r => r.GetEventByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -63,7 +116,7 @@ public class CatalogQueryHandlerTests
             .Setup(r => r.GetEventByIdAsync(eventId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((EventDetailsReadModel?)null);
 
-        var handler = new GetEventByIdQueryHandler(_readRepositoryMock.Object);
+        var handler = new GetEventByIdQueryHandler(_readRepositoryMock.Object, _cacheServiceMock.Object);
 
         // Act
         var act = async () => await handler.HandleAsync(new GetEventByIdQuery(eventId));
@@ -100,10 +153,10 @@ public class CatalogQueryHandlerTests
     }
 
     [Fact]
-    public async Task ListVenues_ShouldReturnVenuesFromReadRepository()
+    public async Task ListVenues_WhenCacheMiss_ShouldReturnVenuesAndPopulateCache()
     {
         // Arrange
-        var venues = new List<VenueReadModel>
+        IReadOnlyCollection<VenueReadModel> venues = new List<VenueReadModel>
         {
             new(Guid.NewGuid(), "Allianz Parque", "allianz-parque", "Arena", "Av. Francisco Matarazzo", "Sao Paulo", "SP", "BR", 45000, Array.Empty<SeatSectionReadModel>())
         }.AsReadOnly();
@@ -112,7 +165,7 @@ public class CatalogQueryHandlerTests
             .Setup(r => r.ListVenuesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(venues);
 
-        var handler = new ListVenuesQueryHandler(_readRepositoryMock.Object);
+        var handler = new ListVenuesQueryHandler(_readRepositoryMock.Object, _cacheServiceMock.Object);
 
         // Act
         var result = await handler.HandleAsync(new ListVenuesQuery());
@@ -120,5 +173,8 @@ public class CatalogQueryHandlerTests
         // Assert
         result.Should().HaveCount(1);
         result.First().Name.Should().Be("Allianz Parque");
+        _cacheServiceMock.Verify(
+            c => c.SetAsync(CacheKeys.VenuesList(), venues, CacheKeys.DefaultCatalogTtl, It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

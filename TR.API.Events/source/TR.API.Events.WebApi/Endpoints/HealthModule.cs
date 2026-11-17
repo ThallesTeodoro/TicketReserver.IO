@@ -5,6 +5,7 @@ using Dapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using StackExchange.Redis;
 using TR.API.Events.Infrastructure.Persistence;
 using TR.API.Events.WebApi.Contracts;
 
@@ -31,25 +32,33 @@ public sealed class HealthModule : ICarterModule
         .Produces<JsonResponse<object, object>>(StatusCodes.Status200OK)
         .WithOpenApi();
 
-        group.MapGet("/ready", async (IDbConnectionFactory connectionFactory, CancellationToken ct) =>
+        group.MapGet("/ready", async (
+            IDbConnectionFactory connectionFactory,
+            IConnectionMultiplexer redisMultiplexer,
+            CancellationToken ct) =>
         {
             try
             {
                 using var connection = await connectionFactory.CreateConnectionAsync(ct);
-                var result = await connection.ExecuteScalarAsync<int>(new CommandDefinition("SELECT 1;", cancellationToken: ct));
+                var dbResult = await connection.ExecuteScalarAsync<int>(new CommandDefinition("SELECT 1;", cancellationToken: ct));
+
+                var redisDb = redisMultiplexer.GetDatabase();
+                var redisLatency = await redisDb.PingAsync();
 
                 var data = new
                 {
                     status = "Ready",
-                    database = result == 1 ? "Connected" : "Unknown",
+                    database = dbResult == 1 ? "Connected" : "Unknown",
+                    redis = "Connected",
+                    redisPingMs = Math.Round(redisLatency.TotalMilliseconds, 2),
                     timestamp = DateTimeOffset.UtcNow
                 };
 
-                return Results.Ok(JsonResponse<object, object>.Success(data, StatusCodes.Status200OK, "Database is ready"));
+                return Results.Ok(JsonResponse<object, object>.Success(data, StatusCodes.Status200OK, "Dependencies are ready"));
             }
             catch (Exception ex)
             {
-                var errors = new[] { $"Database readiness probe failed: {ex.Message}" };
+                var errors = new[] { $"Readiness probe failed: {ex.Message}" };
                 return Results.Json(
                     JsonResponse<object, object>.Failure(StatusCodes.Status503ServiceUnavailable, errors, "Service Unavailable"),
                     statusCode: StatusCodes.Status503ServiceUnavailable
@@ -57,7 +66,7 @@ public sealed class HealthModule : ICarterModule
             }
         })
         .WithName("GetReadiness")
-        .WithSummary("Readiness probe verifying database connectivity")
+        .WithSummary("Readiness probe verifying PostgreSQL and Redis connectivity")
         .Produces<JsonResponse<object, object>>(StatusCodes.Status200OK)
         .Produces<JsonResponse<object, object>>(StatusCodes.Status503ServiceUnavailable)
         .WithOpenApi();

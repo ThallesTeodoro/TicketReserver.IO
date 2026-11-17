@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using TR.API.Events.Application.Events.CancelEvent;
 using TR.API.Events.Application.Events.ChangeEventStatus;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Entities;
 using TR.API.Events.Domain.Exceptions;
@@ -14,6 +15,7 @@ public class EventLifecycleHandlerTests
 {
     private readonly Mock<IEventRepository> _eventRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ICacheService> _cacheServiceMock = new();
 
     private static Event CreateDraftEvent()
     {
@@ -29,7 +31,7 @@ public class EventLifecycleHandlerTests
     }
 
     [Fact]
-    public async Task ChangeEventStatus_FromDraftToPublished_ShouldSucceed()
+    public async Task ChangeEventStatus_FromDraftToPublished_ShouldSucceedAndInvalidateCache()
     {
         // Arrange
         var evt = CreateDraftEvent();
@@ -40,6 +42,7 @@ public class EventLifecycleHandlerTests
         var handler = new ChangeEventStatusCommandHandler(
             _eventRepositoryMock.Object,
             _unitOfWorkMock.Object,
+            _cacheServiceMock.Object,
             new ChangeEventStatusCommandValidator());
 
         // Act
@@ -49,6 +52,9 @@ public class EventLifecycleHandlerTests
         result.Status.Should().Be("PUBLISHED");
         result.Version.Should().Be(2);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(
+            c => c.RemoveAsync(CacheKeys.EventById(evt.Id), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -63,6 +69,7 @@ public class EventLifecycleHandlerTests
         var handler = new ChangeEventStatusCommandHandler(
             _eventRepositoryMock.Object,
             _unitOfWorkMock.Object,
+            _cacheServiceMock.Object,
             new ChangeEventStatusCommandValidator());
 
         // Act
@@ -73,7 +80,7 @@ public class EventLifecycleHandlerTests
     }
 
     [Fact]
-    public async Task CancelEvent_ShouldTransitionStatusToCancelled()
+    public async Task CancelEvent_ShouldTransitionStatusToCancelledAndInvalidateCache()
     {
         // Arrange
         var evt = CreateDraftEvent();
@@ -83,7 +90,8 @@ public class EventLifecycleHandlerTests
 
         var handler = new CancelEventCommandHandler(
             _eventRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _cacheServiceMock.Object);
 
         // Act
         var result = await handler.HandleAsync(new CancelEventCommand(evt.Id));
@@ -92,5 +100,8 @@ public class EventLifecycleHandlerTests
         result.Status.Should().Be("CANCELLED");
         result.Version.Should().Be(2);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(
+            c => c.RemoveAsync(CacheKeys.EventById(evt.Id), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

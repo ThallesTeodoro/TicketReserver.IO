@@ -3,6 +3,7 @@ namespace TR.API.Events.Application.Events.ChangeEventStatus;
 using FluentValidation;
 using TR.API.Events.Application.Common.Messaging;
 using TR.API.Events.Application.Events.Common;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Enums;
 using TR.API.Events.Domain.Exceptions;
@@ -21,6 +22,7 @@ public sealed class ChangeEventStatusCommandValidator : AbstractValidator<Change
 public sealed class ChangeEventStatusCommandHandler(
     IEventRepository eventRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     IValidator<ChangeEventStatusCommand> validator) : ICommandHandler<ChangeEventStatusCommand, EventResponse>
 {
     public async Task<EventResponse> HandleAsync(ChangeEventStatusCommand command, CancellationToken cancellationToken = default)
@@ -45,6 +47,7 @@ public sealed class ChangeEventStatusCommandHandler(
 
         eventRepository.Update(evt);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.EventById(command.Id), cancellationToken);
 
         return evt.ToResponse();
     }

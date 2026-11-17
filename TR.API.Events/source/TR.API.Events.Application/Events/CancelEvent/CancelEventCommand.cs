@@ -2,6 +2,7 @@ namespace TR.API.Events.Application.Events.CancelEvent;
 
 using TR.API.Events.Application.Common.Messaging;
 using TR.API.Events.Application.Events.Common;
+using TR.API.Events.Domain.Contracts.Caching;
 using TR.API.Events.Domain.Contracts.Persistence;
 using TR.API.Events.Domain.Exceptions;
 
@@ -9,7 +10,8 @@ public sealed record CancelEventCommand(Guid Id) : ICommand<EventResponse>;
 
 public sealed class CancelEventCommandHandler(
     IEventRepository eventRepository,
-    IUnitOfWork unitOfWork) : ICommandHandler<CancelEventCommand, EventResponse>
+    IUnitOfWork unitOfWork,
+    ICacheService cacheService) : ICommandHandler<CancelEventCommand, EventResponse>
 {
     public async Task<EventResponse> HandleAsync(CancelEventCommand command, CancellationToken cancellationToken = default)
     {
@@ -25,6 +27,7 @@ public sealed class CancelEventCommandHandler(
 
         eventRepository.Update(evt);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.EventById(command.Id), cancellationToken);
 
         return evt.ToResponse();
     }
