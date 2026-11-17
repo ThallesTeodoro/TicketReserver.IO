@@ -2,6 +2,7 @@ using Carter;
 using Serilog;
 using TR.API.Events.Application;
 using TR.API.Events.Infrastructure;
+using TR.API.Events.Infrastructure.Persistence;
 using TR.API.Events.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,10 @@ builder.Services.AddCarter();
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
+
+// Ensure default venues and seat sections exist
+var seeder = app.Services.GetRequiredService<DatabaseSeeder>();
+await seeder.SeedAsync();
 
 // Global Exception Handler Middleware
 app.UseMiddleware<ExceptionHandlerMiddleware>();

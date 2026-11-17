@@ -11,7 +11,7 @@ public static class DependencyInjection
     {
         var assembly = typeof(DependencyInjection).Assembly;
 
-        services.AddSingleton<ISender, DefaultSender>();
+        services.AddScoped<ISender, DefaultSender>();
         services.AddValidatorsFromAssembly(assembly);
 
         RegisterHandlers(services, assembly);

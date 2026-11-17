@@ -1,6 +1,6 @@
 namespace TR.API.Events.Domain.Exceptions;
 
-public abstract class DomainException(string message) : Exception(message);
+public class DomainException(string message) : Exception(message);
 
 public class NotFoundException(string message) : DomainException(message);
 
