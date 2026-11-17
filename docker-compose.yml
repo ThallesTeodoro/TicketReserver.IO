@@ -1,5 +1,6 @@
 include:
   - ./docker/redis/docker-compose.yml
+  - ./docker/kafka/docker-compose.yml
   - ./TR.API.Events/docker-compose.yml
 
 services:
