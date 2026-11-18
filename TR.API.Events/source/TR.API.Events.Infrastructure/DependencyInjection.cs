@@ -18,10 +18,10 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("EventsDb")
-            ?? "Host=postgres;Port=5432;Database=catalog_events_db;Username=postgres;Password=postgres";
+            ?? throw new ArgumentNullException(nameof(configuration), "A connection string 'EventsDb' não foi configurada.");
 
         var redisConnectionString = configuration.GetConnectionString("Redis")
-            ?? "redis:6379,abortConnect=false";
+            ?? throw new ArgumentNullException(nameof(configuration), "A connection string 'Redis' não foi configurada.");
 
         var translator = new NpgsqlNullNameTranslator();
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
