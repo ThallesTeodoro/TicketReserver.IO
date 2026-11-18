@@ -47,6 +47,10 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<IRedisHoldService, RedisHoldService>();
+        services.AddSingleton<TR.API.Reservation.Domain.Contracts.Caching.IHoldCacheService>(sp => sp.GetRequiredService<IRedisHoldService>());
+        services.AddScoped<TR.API.Reservation.Domain.Contracts.Persistence.IReservationReadRepository, TR.API.Reservation.Infrastructure.Persistence.Repositories.ReservationReadRepository>();
+        services.AddScoped<TR.API.Reservation.Domain.Contracts.Persistence.IReservationRepository, TR.API.Reservation.Infrastructure.Persistence.Repositories.ReservationRepository>();
+        services.AddScoped<TR.API.Reservation.Domain.Contracts.Persistence.IUnitOfWork>(sp => sp.GetRequiredService<ReservationDbContext>());
 
         return services;
     }

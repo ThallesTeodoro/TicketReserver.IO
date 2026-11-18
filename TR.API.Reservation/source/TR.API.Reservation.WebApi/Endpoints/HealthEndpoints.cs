@@ -24,7 +24,6 @@ public class HealthEndpoints : ICarterModule
         })
         .WithName("HealthCheck")
         .WithSummary("Verifica a saúde operacional da API de Reserva")
-        .WithOpenApi()
         .Produces<JsonResponse<object, object>>(StatusCodes.Status200OK);
     }
 }
