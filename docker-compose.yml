@@ -24,7 +24,8 @@ services:
       - "${EVENTS_DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init-events-db.sql:/docker-entrypoint-initdb.d/init-events-db.sql:ro
+      - ./docker/postgres/init-events-db.sql:/docker-entrypoint-initdb.d/01-init-events-db.sql:ro
+      - ./docker/postgres/init-reservation-db.sql:/docker-entrypoint-initdb.d/02-init-reservation-db.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-catalog_events_db}"]
       interval: 5s
