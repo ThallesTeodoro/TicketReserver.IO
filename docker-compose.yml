@@ -3,6 +3,7 @@ include:
   - ./docker/kafka/docker-compose.yml
   - ./TR.API.Events/docker-compose.yml
   - ./TR.API.Reservation/docker-compose.yml
+  - ./TR.HW.ReservationOutboxRelay/docker-compose.yml
 
 services:
   postgres:

@@ -1,0 +1,26 @@
+services:
+  reservation-outbox-relay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-reservation-outbox-relay
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - ConnectionStrings__ReservationDb=Host=postgres;Port=5432;Database=reservation_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - Kafka__BootstrapServers=kafka:9092
+      - Kafka__CheckoutTopic=reservation.v1.checkout_req
+      - Kafka__HoldCreatedDelayedTopic=reservation.v1.hold_created.delayed
+      - Kafka__DeadLetterQueueTopic=reservation.v1.checkout_req.DLQ
+      - Kafka__ClientId=tr-hw-reservation-outbox-relay
+      - OutboxRelay__BatchSize=50
+      - OutboxRelay__IntervalMilliseconds=500
+      - OutboxRelay__EmptyDelayMilliseconds=1000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net

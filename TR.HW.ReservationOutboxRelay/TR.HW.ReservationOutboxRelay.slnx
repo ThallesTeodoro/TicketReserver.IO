@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.ReservationOutboxRelay/TR.HW.ReservationOutboxRelay.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.ReservationOutboxRelay.UnitTests/TR.HW.ReservationOutboxRelay.UnitTests.csproj" />
+  </Folder>
+</Solution>
