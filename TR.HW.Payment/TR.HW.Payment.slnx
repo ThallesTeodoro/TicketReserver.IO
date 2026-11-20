@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.Payment.Application/TR.HW.Payment.Application.csproj" />
+    <Project Path="source/TR.HW.Payment.Domain/TR.HW.Payment.Domain.csproj" />
+    <Project Path="source/TR.HW.Payment.Infrastructure/TR.HW.Payment.Infrastructure.csproj" />
+    <Project Path="source/TR.HW.Payment.Worker/TR.HW.Payment.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.Payment.UnitTests/TR.HW.Payment.UnitTests.csproj" />
+  </Folder>
+</Solution>

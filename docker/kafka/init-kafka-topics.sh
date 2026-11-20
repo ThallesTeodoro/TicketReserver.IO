@@ -23,6 +23,7 @@ echo "==> Kafka está pronto. Iniciando provisionamento determinístico de tópi
 DOM_TOPICS=(
     "reservation.v1.checkout_req"
     "payment.v1.approved"
+    "payment.v1.declined"
     "payment.v1.refunded"
     "ticketing.v1.issued"
     "ticketing.v1.failed"
@@ -42,6 +43,7 @@ done
 DLQ_TOPICS=(
     "reservation.v1.checkout_req.DLQ"
     "payment.v1.approved.DLQ"
+    "payment.v1.declined.DLQ"
     "payment.v1.refunded.DLQ"
     "ticketing.v1.issued.DLQ"
     "ticketing.v1.failed.DLQ"
