@@ -4,6 +4,7 @@ include:
   - ./TR.API.Events/docker-compose.yml
   - ./TR.API.Reservation/docker-compose.yml
   - ./TR.HW.ReservationOutboxRelay/docker-compose.yml
+  - ./TR.HW.ResTimeout/docker-compose.yml
 
 services:
   postgres:

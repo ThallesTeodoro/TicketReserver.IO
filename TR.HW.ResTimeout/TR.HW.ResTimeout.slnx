@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.ResTimeout/TR.HW.ResTimeout.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.ResTimeout.UnitTests/TR.HW.ResTimeout.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,25 @@
+services:
+  reservation-timeout-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-reservation-timeout-worker
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - ConnectionStrings__ReservationDb=Host=postgres;Port=5432;Database=reservation_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - ConnectionStrings__Redis=${REDIS_HOST:-redis}:6379,abortConnect=false
+      - Kafka__BootstrapServers=kafka:9092
+      - Kafka__Topic=reservation.v1.hold_created.delayed
+      - Kafka__GroupId=cg-reservation-timeout
+      - Kafka__DeadLetterQueueTopic=reservation.v1.hold_created.delayed.DLQ
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net
