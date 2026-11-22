@@ -6,6 +6,7 @@ include:
   - ./TR.HW.ReservationOutboxRelay/docker-compose.yml
   - ./TR.HW.ResTimeout/docker-compose.yml
   - ./TR.HW.Payment/docker-compose.yml
+  - ./TR.HW.Ticketing/docker-compose.yml
 
 services:
   postgres:
@@ -31,6 +32,7 @@ services:
       - ./docker/postgres/init-events-db.sql:/docker-entrypoint-initdb.d/01-init-events-db.sql:ro
       - ./docker/postgres/init-reservation-db.sql:/docker-entrypoint-initdb.d/02-init-reservation-db.sql:ro
       - ./docker/postgres/init-payment-db.sql:/docker-entrypoint-initdb.d/03-init-payment-db.sql:ro
+      - ./docker/postgres/init-ticketing-db.sql:/docker-entrypoint-initdb.d/04-init-ticketing-db.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-catalog_events_db}"]
       interval: 5s

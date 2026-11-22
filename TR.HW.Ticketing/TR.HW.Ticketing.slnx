@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.Ticketing.Application/TR.HW.Ticketing.Application.csproj" />
+    <Project Path="source/TR.HW.Ticketing.Domain/TR.HW.Ticketing.Domain.csproj" />
+    <Project Path="source/TR.HW.Ticketing.Infrastructure/TR.HW.Ticketing.Infrastructure.csproj" />
+    <Project Path="source/TR.HW.Ticketing.Worker/TR.HW.Ticketing.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.Ticketing.UnitTests/TR.HW.Ticketing.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,27 @@
+services:
+  ticketing-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-ticketing-worker
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - Database__ConnectionString=Host=postgres;Port=5432;Database=ticketing_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - Kafka__BootstrapServers=kafka:9092
+      - Kafka__TicketsIssuedTopic=ticketing.v1.issued
+      - Kafka__TicketingFailedTopic=ticketing.v1.failed
+      - Kafka__DeadLetterQueueTopic=payment.v1.approved.DLQ
+      - KafkaConsumer__BootstrapServers=kafka:9092
+      - KafkaConsumer__Topic=payment.v1.approved
+      - KafkaConsumer__GroupId=cg-ticketing-worker
+      - KafkaConsumer__DeadLetterQueueTopic=payment.v1.approved.DLQ
+      - TicketingSecurity__QrCodeSecretKey=${TICKETING_QR_SECRET_KEY:-ticketreserver-default-hmac-secret-key-2026-anti-fraud}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net
