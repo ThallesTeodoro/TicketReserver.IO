@@ -1,0 +1,27 @@
+services:
+  refund-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-refund-worker
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - Database__ConnectionString=Host=postgres;Port=5432;Database=payment_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - Kafka__BootstrapServers=kafka:9092
+      - Kafka__PaymentRefundedTopic=payment.v1.refunded
+      - Kafka__DeadLetterQueueTopic=ticketing.v1.failed.DLQ
+      - KafkaConsumer__BootstrapServers=kafka:9092
+      - KafkaConsumer__Topic=ticketing.v1.failed
+      - KafkaConsumer__GroupId=cg-payment-refund
+      - KafkaConsumer__DeadLetterQueueTopic=ticketing.v1.failed.DLQ
+      - PaymentGateway__Provider=STRIPE
+      - PaymentGateway__SimulateSuccess=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net
