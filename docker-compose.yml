@@ -9,6 +9,7 @@ include:
   - ./TR.HW.Ticketing/docker-compose.yml
   - ./TR.HW.Refund/docker-compose.yml
   - ./TR.HW.ResCompensator/docker-compose.yml
+  - ./TR.HW.Notification/docker-compose.yml
 
 services:
   postgres:

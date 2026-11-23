@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.Notification.Application/TR.HW.Notification.Application.csproj" />
+    <Project Path="source/TR.HW.Notification.Domain/TR.HW.Notification.Domain.csproj" />
+    <Project Path="source/TR.HW.Notification.Infrastructure/TR.HW.Notification.Infrastructure.csproj" />
+    <Project Path="source/TR.HW.Notification.Worker/TR.HW.Notification.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.Notification.UnitTests/TR.HW.Notification.UnitTests.csproj" />
+  </Folder>
+</Solution>
