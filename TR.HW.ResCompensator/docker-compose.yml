@@ -1,0 +1,27 @@
+services:
+  reservation-compensator-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-reservation-compensator-worker
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - Database__ConnectionString=Host=postgres;Port=5432;Database=reservation_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - Redis__ConnectionString=${REDIS_HOST:-redis}:6379,abortConnect=false
+      - KafkaConsumer__BootstrapServers=kafka:9092
+      - KafkaConsumer__Topics__0=payment.v1.refunded
+      - KafkaConsumer__Topics__1=payment.v1.declined
+      - KafkaConsumer__Topics__2=ticketing.v1.issued
+      - KafkaConsumer__GroupId=cg-reservation-compensator
+      - KafkaConsumer__DeadLetterQueueTopic=payment.v1.refunded.DLQ
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net

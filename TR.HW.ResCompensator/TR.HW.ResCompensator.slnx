@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.ResCompensator.Application/TR.HW.ResCompensator.Application.csproj" />
+    <Project Path="source/TR.HW.ResCompensator.Domain/TR.HW.ResCompensator.Domain.csproj" />
+    <Project Path="source/TR.HW.ResCompensator.Infrastructure/TR.HW.ResCompensator.Infrastructure.csproj" />
+    <Project Path="source/TR.HW.ResCompensator.Worker/TR.HW.ResCompensator.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.ResCompensator.UnitTests/TR.HW.ResCompensator.UnitTests.csproj" />
+  </Folder>
+</Solution>

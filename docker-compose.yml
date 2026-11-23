@@ -8,6 +8,7 @@ include:
   - ./TR.HW.Payment/docker-compose.yml
   - ./TR.HW.Ticketing/docker-compose.yml
   - ./TR.HW.Refund/docker-compose.yml
+  - ./TR.HW.ResCompensator/docker-compose.yml
 
 services:
   postgres:
