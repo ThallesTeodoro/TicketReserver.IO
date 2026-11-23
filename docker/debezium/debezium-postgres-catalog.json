@@ -1,0 +1,17 @@
+{
+  "name": "catalog-postgres-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "plugin.name": "pgoutput",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "catalog_events_db",
+    "database.server.name": "catalog",
+    "table.include.list": "public.venues,public.events,public.seat_sections,public.ticket_tiers,public.seats",
+    "topic.prefix": "catalog.events",
+    "tombstones.on.delete": "true"
+  }
+}

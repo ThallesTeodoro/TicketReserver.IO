@@ -1,0 +1,25 @@
+services:
+  search-replication-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-search-replication-worker
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - Elasticsearch__DefaultIndex=events_search_v1
+      - Elasticsearch__AliasName=events_search
+      - KafkaConsumer__BootstrapServers=kafka:9092
+      - KafkaConsumer__GroupId=cg-search-replication-worker
+      - KafkaConsumer__Topics__0=catalog.events.events
+      - KafkaConsumer__Topics__1=catalog.events.venues
+      - KafkaConsumer__Topics__2=catalog.events.ticket_tiers
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net

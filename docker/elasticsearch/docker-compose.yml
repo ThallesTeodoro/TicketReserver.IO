@@ -1,0 +1,40 @@
+services:
+  elasticsearch:
+    image: elasticsearch:8.12.2
+    container_name: ticketreserver-elastic
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "${ELASTIC_PORT:-9200}:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cat/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - ticketreserver-internal-net
+
+  elasticsearch-init:
+    image: curlimages/curl:8.6.0
+    container_name: ticketreserver-elastic-init
+    restart: "no"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./docker/elasticsearch/init-elasticsearch.sh:/init-elasticsearch.sh:ro
+    entrypoint: ["/bin/sh", "-c", "/init-elasticsearch.sh"]
+    environment:
+      - ELASTIC_URL=http://elasticsearch:9200
+    networks:
+      - ticketreserver-internal-net
+
+volumes:
+  es_data:
+    driver: local

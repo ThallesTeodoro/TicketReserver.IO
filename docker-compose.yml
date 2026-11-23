@@ -10,6 +10,9 @@ include:
   - ./TR.HW.Refund/docker-compose.yml
   - ./TR.HW.ResCompensator/docker-compose.yml
   - ./TR.HW.Notification/docker-compose.yml
+  - ./docker/elasticsearch/docker-compose.yml
+  - ./docker/debezium/docker-compose.yml
+  - ./TR.HW.Repl/docker-compose.yml
 
 services:
   postgres:

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.HW.Repl.Application/TR.HW.Repl.Application.csproj" />
+    <Project Path="source/TR.HW.Repl.Domain/TR.HW.Repl.Domain.csproj" />
+    <Project Path="source/TR.HW.Repl.Infrastructure/TR.HW.Repl.Infrastructure.csproj" />
+    <Project Path="source/TR.HW.Repl.Worker/TR.HW.Repl.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.HW.Repl.UnitTests/TR.HW.Repl.UnitTests.csproj" />
+  </Folder>
+</Solution>
