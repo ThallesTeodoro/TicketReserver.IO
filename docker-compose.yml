@@ -13,6 +13,7 @@ include:
   - ./docker/elasticsearch/docker-compose.yml
   - ./docker/debezium/docker-compose.yml
   - ./TR.HW.Repl/docker-compose.yml
+  - ./TR.API.Search/docker-compose.yml
 
 services:
   postgres:

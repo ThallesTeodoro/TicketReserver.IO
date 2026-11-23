@@ -1,0 +1,21 @@
+services:
+  search-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketreserver-search-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - Elasticsearch__IndexName=events_search
+      - Elasticsearch__RequestTimeoutSeconds=10
+      - Elasticsearch__RetryCount=3
+    ports:
+      - "${SEARCH_API_PORT:-5003}:8080"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - ticketreserver-internal-net

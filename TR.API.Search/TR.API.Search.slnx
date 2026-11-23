@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/TR.API.Search.Application/TR.API.Search.Application.csproj" />
+    <Project Path="source/TR.API.Search.Domain/TR.API.Search.Domain.csproj" />
+    <Project Path="source/TR.API.Search.Infrastructure/TR.API.Search.Infrastructure.csproj" />
+    <Project Path="source/TR.API.Search.WebApi/TR.API.Search.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TR.API.Search.UnitTests/TR.API.Search.UnitTests.csproj" />
+  </Folder>
+</Solution>
