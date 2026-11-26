@@ -112,6 +112,12 @@ public sealed class PaymentRefundWorker(
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<ProcessRefundCommand, ProcessRefundResult>>();
         var result = await handler.HandleAsync(command, ct);
 
+        if (result.IsRefunded)
+        {
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSeatCollisionRefund();
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent("payment.v1.refunded");
+        }
+
         logger.LogInformation(
             "Refund command processed for Reservation {ReservationId}. Result: {Status}, RefundId: {RefundId}",
             command.ReservationId,

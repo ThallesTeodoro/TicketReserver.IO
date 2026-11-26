@@ -10,6 +10,8 @@ services:
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
       - ConnectionStrings__ReservationDb=Host=postgres;Port=5432;Database=reservation_db;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       - ConnectionStrings__Redis=${REDIS_HOST:-redis}:6379,abortConnect=false
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=reservation-api
     ports:
       - "${RESERVATION_API_PORT:-5003}:8080"
     depends_on:

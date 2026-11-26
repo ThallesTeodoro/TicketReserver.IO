@@ -34,7 +34,11 @@ public sealed class RedisHoldService(IConnectionMultiplexer redis) : IRedisHoldS
         CancellationToken cancellationToken = default)
     {
         var key = BuildSeatKey(eventId, seatId);
-        return await _database.StringSetAsync(key, reservationId.ToString(), duration, When.NotExists);
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var acquired = await _database.StringSetAsync(key, reservationId.ToString(), duration, When.NotExists);
+        stopwatch.Stop();
+        TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordRedisLockAcquireDuration(stopwatch.Elapsed.TotalSeconds, acquired, "SET NX EX");
+        return acquired;
     }
 
     public async Task<bool> ReleaseSeatHoldAsync(
@@ -61,12 +65,16 @@ public sealed class RedisHoldService(IConnectionMultiplexer redis) : IRedisHoldS
         CancellationToken cancellationToken = default)
     {
         var quotaKey = BuildTierQuotaKey(eventId, ticketTierId);
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var result = await _database.ScriptEvaluateAsync(
             DeductQuotaScript,
             new RedisKey[] { quotaKey },
             new RedisValue[] { quantity });
+        stopwatch.Stop();
+        var acquired = (int)result == 1;
+        TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordRedisLockAcquireDuration(stopwatch.Elapsed.TotalSeconds, acquired, "LUA DEDUCT QUOTA");
 
-        return (int)result == 1;
+        return acquired;
     }
 
     public async Task<bool> ReleaseTierQuotaHoldAsync(

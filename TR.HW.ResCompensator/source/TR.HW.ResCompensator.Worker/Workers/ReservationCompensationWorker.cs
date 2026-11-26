@@ -113,6 +113,7 @@ public sealed class ReservationCompensationWorker(
 
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<ReconcileReservationOutcomeCommand, ReconcileReservationOutcomeResult>>();
         var result = await handler.HandleAsync(command, ct);
+        TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent("reservation.compensated");
 
         logger.LogInformation(
             "Reservation compensation processed for Reservation {ReservationId}. FinalStatus: {FinalStatus}, ReleasedSeats: {ReleasedSeats}",

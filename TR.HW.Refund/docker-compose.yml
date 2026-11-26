@@ -18,6 +18,8 @@ services:
       - KafkaConsumer__DeadLetterQueueTopic=ticketing.v1.failed.DLQ
       - PaymentGateway__Provider=STRIPE
       - PaymentGateway__SimulateSuccess=true
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=refund-worker
     depends_on:
       postgres:
         condition: service_healthy

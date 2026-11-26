@@ -14,6 +14,8 @@ services:
       - Kafka__Topic=reservation.v1.hold_created.delayed
       - Kafka__GroupId=cg-reservation-timeout
       - Kafka__DeadLetterQueueTopic=reservation.v1.hold_created.delayed.DLQ
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=res-timeout-worker
     depends_on:
       postgres:
         condition: service_healthy

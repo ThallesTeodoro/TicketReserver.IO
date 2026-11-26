@@ -46,6 +46,25 @@ A plataforma inclui uma stack de telemetria completa e unificada:
 - **Dashboards provisionados:**
   - `TicketReserver - Saga & Business Metrics` (Concorrência `/hold` e `/checkout`, latência p95/p99 de Lock no Redis, saúde da Saga e taxa de auto-refund, backlog de outbox e consumer lag no Kafka).
 
+### 🔍 Instrumentação de Aplicação (.NET 10 OpenTelemetry)
+
+Todos os microsserviços Web API e background workers utilizam a biblioteca compartilhada `TR.Common.Diagnostics` para telemetria nativa unificada:
+
+1. **Rastreamento Distribuído (W3C TraceContext over Kafka):**
+   - Propagação transparente dos headers W3C (`traceparent` e `tracestate`) nos registros de mensagem do Apache Kafka via `KafkaTraceContextPropagator`.
+   - `ActivitySource` dedicados: `TicketReserver.Kafka` e `TicketReserver.Http`.
+   - Spans de consumo de mensagens (`Kafka Consumer Process`) são linkados diretamente ao span de publicação da API ou outbox relay originário, permitindo visualização de traces ponta a ponta no Grafana Tempo através de toda a saga coreografada.
+
+2. **Métricas de Domínio e Resiliência (System.Diagnostics.Metrics):**
+   - `ticketreserver_redis_lock_acquire_duration_seconds` (Histogram): Latência de aquisição de lock distribuído no Redis (`SET NX EX`).
+   - `ticketreserver_reservations_active_total` (UpDownCounter): Contagem de reservas ativas em retenção temporária.
+   - `ticketreserver_saga_events_total` (Counter): Volume de eventos de saga particionado por `event_type` (`payment.v1.approved`, `payment.v1.refunded`, `ticketing.v1.issued`, `ticketing.v1.failed`, `reservation.compensated`) e `status`.
+   - `ticketreserver_seat_collision_refunds_total` (Counter): Taxa de colisões de assento disparando compensação (auto-refund).
+   - `ticketreserver_outbox_pending_messages` (ObservableGauge): Monitoramento em tempo real do backlog de mensagens outbox pendentes no PostgreSQL.
+
+3. **Logs Estruturados Correlacionados:**
+   - Logs Serilog enriquecidos automaticamente com `TraceId`, `SpanId` e atributos de serviço (`service.name`, `service.version`), exportados via OTLP gRPC para o OTel Collector e agregados no Grafana Loki.
+
 ---
 
 ## 🚀 Como Executar
@@ -69,6 +88,6 @@ Ou com os containers rodando:
 
 ## 📚 Documentação Técnica
 
-- [Decisões Arquiteturais e Sagas](file:///.agents/specification/architecture/arch-decisions.md)
-- [Especificação de Infraestrutura e Redes](file:///.agents/specification/infra/infra-spec.md)
-- [Definição de Pronto e Projeto](file:///PROJECT.md)
+- [Decisões Arquiteturais e Sagas](file:///home/thallesteodoro/development/ticket-reservation-pdi/.agents/specification/architecture/arch-decisions.md)
+- [Especificação de Infraestrutura e Redes](file:///home/thallesteodoro/development/ticket-reservation-pdi/.agents/specification/infra/infra-spec.md)
+- [Definição de Pronto e Projeto](file:///home/thallesteodoro/development/ticket-reservation-pdi/PROJECT.md)

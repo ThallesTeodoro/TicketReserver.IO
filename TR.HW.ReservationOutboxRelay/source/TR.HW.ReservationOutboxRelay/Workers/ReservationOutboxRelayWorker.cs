@@ -58,6 +58,7 @@ public class ReservationOutboxRelayWorker(
         var outboxRepository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
 
         var messages = await outboxRepository.GetPendingBatchAsync(_options.BatchSize, cancellationToken);
+        TicketReserver.Diagnostics.TicketReserverDiagnostics.UpdateOutboxPendingMessages(messages.Count);
         if (!messages.Any())
         {
             return 0;
@@ -82,6 +83,7 @@ public class ReservationOutboxRelayWorker(
         {
             await kafkaProducer.ProduceAsync(message, cancellationToken);
             await repository.MarkAsPublishedAsync(message.Id, DateTime.UtcNow, cancellationToken);
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent(kafkaProducer.ResolveTopic(message.EventType), "dispatched");
             logger.LogInformation("Mensagem {MessageId} publicada no Kafka e marcada como PUBLISHED.", message.Id);
         }
         catch (Exception ex)

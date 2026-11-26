@@ -379,9 +379,27 @@ datasources:
           url: "$${__value.raw}"
 ```
 
----
+### 5.4. Instrumentação de Aplicação (.NET 10 OpenTelemetry & W3C TraceContext)
 
-## 6. Dashboards e Métricas Críticas de Negócio
+Todos os serviços (.NET 10) utilizam a biblioteca compartilhada `shared/TR.Common.Diagnostics` para telemetria de aplicação:
+
+1. **Rastreamento Distribuído via Kafka (W3C TraceContext):**
+   - Injeção e extração de headers W3C standard (`traceparent` e `tracestate`) nos registros de mensagem do Apache Kafka via `KafkaTraceContextPropagator`.
+   - `ActivitySource` registrados:
+     - `TicketReserver.Kafka`: Spans para publicação e consumo de mensagens com `ActivityKind.Producer` e `ActivityKind.Consumer`.
+     - `TicketReserver.Http`: Instrumentação de requisições de entrada/saída HTTP.
+   - Exportação direta para o OTel Collector via OTLP gRPC (`http://otel-collector:4317`).
+
+2. **Métricas de Domínio e Resiliência (System.Diagnostics.Metrics):**
+   - `ticketreserver_redis_lock_acquire_duration_seconds` (Histogram): Latência na aquisição de locks distribuídos no Redis.
+   - `ticketreserver_reservations_active_total` (UpDownCounter): Volume de reservas ativas em retenção temporária.
+   - `ticketreserver_saga_events_total` (Counter): Contagem de eventos de saga particionados por `event_type` (`payment.v1.approved`, `payment.v1.refunded`, `ticketing.v1.issued`, `ticketing.v1.failed`, `reservation.compensated`) e `status`.
+   - `ticketreserver_seat_collision_refunds_total` (Counter): Taxa de colisões de assento disparando compensação (auto-refund).
+   - `ticketreserver_outbox_pending_messages` (ObservableGauge): Backlog corrente de mensagens pendentes no outbox transacional.
+
+3. **Logs Estruturados Correlacionados:**
+   - Logs Serilog enriquecidos com `TraceId`, `SpanId`, `service.name` e `service.version`.
+
 
 O Grafana é pré-configurado com dashboards cobrindo indicadores técnicos e métricas de domínio:
 

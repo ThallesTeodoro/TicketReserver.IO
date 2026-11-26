@@ -12,6 +12,8 @@ services:
       - Elasticsearch__IndexName=events_search
       - Elasticsearch__RequestTimeoutSeconds=10
       - Elasticsearch__RetryCount=3
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=search-api
     ports:
       - "${SEARCH_API_PORT:-5003}:8080"
     depends_on:

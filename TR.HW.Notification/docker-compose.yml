@@ -14,6 +14,8 @@ services:
       - KafkaConsumer__Topics__1=payment.v1.refunded
       - KafkaConsumer__Topics__2=payment.v1.declined
       - KafkaConsumer__GroupId=cg-notification-worker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=notification-worker
     depends_on:
       redis:
         condition: service_healthy

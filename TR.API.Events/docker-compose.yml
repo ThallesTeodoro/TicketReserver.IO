@@ -10,6 +10,8 @@ services:
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
       - ConnectionStrings__EventsDb=Host=postgres;Port=5432;Database=${POSTGRES_DB:-catalog_events_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       - ConnectionStrings__Redis=${REDIS_HOST:-redis}:6379,abortConnect=false
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=events-api
     ports:
       - "${EVENTS_API_PORT:-5001}:8080"
     depends_on:

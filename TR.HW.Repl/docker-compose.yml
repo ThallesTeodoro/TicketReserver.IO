@@ -16,6 +16,8 @@ services:
       - KafkaConsumer__Topics__0=catalog.events.events
       - KafkaConsumer__Topics__1=catalog.events.venues
       - KafkaConsumer__Topics__2=catalog.events.ticket_tiers
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=search-replication-worker
     depends_on:
       elasticsearch:
         condition: service_healthy

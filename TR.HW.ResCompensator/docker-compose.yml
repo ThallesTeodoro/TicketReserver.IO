@@ -16,6 +16,8 @@ services:
       - KafkaConsumer__Topics__2=ticketing.v1.issued
       - KafkaConsumer__GroupId=cg-reservation-compensator
       - KafkaConsumer__DeadLetterQueueTopic=payment.v1.refunded.DLQ
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=res-compensator-worker
     depends_on:
       postgres:
         condition: service_healthy

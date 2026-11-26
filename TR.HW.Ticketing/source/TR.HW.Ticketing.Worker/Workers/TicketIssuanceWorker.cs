@@ -112,6 +112,15 @@ public sealed class TicketIssuanceWorker(
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<IssueTicketsCommand, IssueTicketsResult>>();
         var result = await handler.HandleAsync(command, ct);
 
+        if (result.IsSuccess)
+        {
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent("ticketing.v1.issued");
+        }
+        else
+        {
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent("ticketing.v1.failed", "failed");
+        }
+
         logger.LogInformation(
             "Ticket issuance command processed for Reservation {ReservationId}. Result: {Status}, TicketsCount: {Count}",
             command.ReservationId,

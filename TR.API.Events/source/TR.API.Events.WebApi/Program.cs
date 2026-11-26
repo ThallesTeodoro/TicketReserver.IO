@@ -1,4 +1,7 @@
 using Carter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 using TR.API.Events.Application;
 using TR.API.Events.Infrastructure;
@@ -7,14 +10,46 @@ using TR.API.Events.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
+// Configure Serilog with Trace context
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .Enrich.WithProperty("service_name", "events-api")
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{TraceId}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+// Configure OpenTelemetry (Tracing & Metrics)
+var otelEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+var serviceName = builder.Configuration["OTEL_SERVICE_NAME"] ?? "events-api";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService(serviceName: serviceName))
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddSource("TicketReserver.Http");
+
+        if (!string.IsNullOrEmpty(otelEndpoint))
+        {
+            tracing.AddOtlpExporter(opt => opt.Endpoint = new Uri(otelEndpoint));
+        }
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation();
+
+        if (!string.IsNullOrEmpty(otelEndpoint))
+        {
+            metrics.AddOtlpExporter(opt => opt.Endpoint = new Uri(otelEndpoint));
+        }
+    });
 
 // Register application & infrastructure services
 builder.Services.AddApplicationServices();

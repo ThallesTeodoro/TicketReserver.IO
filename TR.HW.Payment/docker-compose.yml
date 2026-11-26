@@ -19,6 +19,8 @@ services:
       - KafkaConsumer__DeadLetterQueueTopic=reservation.v1.checkout_req.DLQ
       - PaymentGateway__Provider=STRIPE
       - PaymentGateway__SimulateSuccess=true
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=payment-worker
     depends_on:
       postgres:
         condition: service_healthy

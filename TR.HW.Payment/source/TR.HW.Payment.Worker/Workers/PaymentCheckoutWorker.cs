@@ -112,6 +112,15 @@ public sealed class PaymentCheckoutWorker(
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<ProcessPaymentCommand, ProcessPaymentResult>>();
         var result = await handler.HandleAsync(command, ct);
 
+        if (result.IsApproved)
+        {
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent("payment.v1.approved");
+        }
+        else
+        {
+            TicketReserver.Diagnostics.TicketReserverDiagnostics.RecordSagaEvent("payment.v1.refunded", "failed");
+        }
+
         logger.LogInformation(
             "Payment checkout command processed for Reservation {ReservationId}. Result: {Status}, PaymentId: {PaymentId}",
             command.ReservationId,

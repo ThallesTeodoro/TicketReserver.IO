@@ -18,6 +18,8 @@ services:
       - KafkaConsumer__GroupId=cg-ticketing-worker
       - KafkaConsumer__DeadLetterQueueTopic=payment.v1.approved.DLQ
       - TicketingSecurity__QrCodeSecretKey=${TICKETING_QR_SECRET_KEY:-ticketreserver-default-hmac-secret-key-2026-anti-fraud}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_SERVICE_NAME=ticketing-worker
     depends_on:
       postgres:
         condition: service_healthy
