@@ -14,6 +14,7 @@ include:
   - ./docker/debezium/docker-compose.yml
   - ./TR.HW.Repl/docker-compose.yml
   - ./TR.API.Search/docker-compose.yml
+  - ./docker/observability/docker-compose.yml
 
 services:
   postgres:
@@ -56,4 +57,7 @@ volumes:
 networks:
   ticketreserver-internal-net:
     name: ticketreserver-internal-net
+    driver: bridge
+  ticketreserver-telemetry-net:
+    name: ticketreserver-telemetry-net
     driver: bridge
