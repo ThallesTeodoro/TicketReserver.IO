@@ -15,6 +15,7 @@ include:
   - ./TR.HW.Repl/docker-compose.yml
   - ./TR.API.Search/docker-compose.yml
   - ./docker/observability/docker-compose.yml
+  - ./docker/ingress/docker-compose.yml
 
 services:
   postgres:
@@ -55,6 +56,9 @@ volumes:
     driver: local
 
 networks:
+  ticketreserver-public-net:
+    name: ticketreserver-public-net
+    driver: bridge
   ticketreserver-internal-net:
     name: ticketreserver-internal-net
     driver: bridge

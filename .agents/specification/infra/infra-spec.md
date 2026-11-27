@@ -400,6 +400,9 @@ Todos os serviços (.NET 10) utilizam a biblioteca compartilhada `shared/TR.Comm
 3. **Logs Estruturados Correlacionados:**
    - Logs Serilog enriquecidos com `TraceId`, `SpanId`, `service.name` e `service.version`.
 
+---
+
+## 6. Dashboards e Métricas Críticas de Negócio
 
 O Grafana é pré-configurado com dashboards cobrindo indicadores técnicos e métricas de domínio:
 
@@ -434,3 +437,38 @@ O Grafana é pré-configurado com dashboards cobrindo indicadores técnicos e m�
 | **Grafana Tempo** | `ticketreserver-tempo` | `3200`, `4317` | `3200:3200` | Distributed Tracing backend |
 | **Grafana Loki** | `ticketreserver-loki` | `3100` | `3100:3100` | Agregação centralizada de logs |
 | **Grafana** | `ticketreserver-grafana` | `3000` | `3000:3000` | Dashboards APM e negócio |
+
+---
+
+## 8. Ingress e API Gateway (NGINX Alpine)
+
+O ecossistema implementa um ponto único de entrada baseado em **NGINX 1.27 Alpine** (`ticketreserver-ingress`), posicionado na DMZ com conexões simultâneas a `ticketreserver-public-net` (exposição das portas 80 e 443 no host) e `ticketreserver-internal-net` (resolução e encaminhamento para os microsserviços internos).
+
+### 8.1. Tabela de Roteamento Unificado
+
+| Rota Externa (Porta 80) | Upstream Interno | Método / Rewrite | Função Principal |
+| :--- | :--- | :--- | :--- |
+| `GET /healthz` | Local | N/A | Healthcheck do Ingress (`{"status":"UP"}`) |
+| `GET /events`, `POST /events` | `http://events-api:8080/events` | Pass-through | Catálogo de eventos |
+| `GET /venues`, `GET /venues/{id}` | `http://events-api:8080/venues` | Pass-through | Locais e setores físicos |
+| `POST /reserva/hold` | `http://reservation-api:8080/reserva/hold` | Pass-through | Reserva temporária e lock no Redis |
+| `POST /reserva/checkout` | `http://reservation-api:8080/reserva/checkout` | Pass-through | Checkout e envio para saga Kafka |
+| `GET /reserva/{id}` | `http://reservation-api:8080/reserva/{id}` | Pass-through | Consulta de status e expiração |
+| `GET /search?q=...` | `http://search-api:8080/api/v1/search/events?q=...` | Rewrite (`^/search` -> `/api/v1/search/events`) | Busca facetada no ElasticSearch |
+| `GET /search/autocomplete` | `http://search-api:8080/api/v1/search/events/autocomplete` | Rewrite | Autocomplete rápido por prefixo |
+| `GET /api/v1/search/*` | `http://search-api:8080/api/v1/search/*` | Pass-through | Rotas nativas da API de busca |
+
+### 8.2. Observabilidade e Propagação de Trace W3C
+
+O Ingress injeta e preserva cabeçalhos essenciais para rastreabilidade de ponta a ponta:
+- `traceparent` e `tracestate`: Propagados transparentemente para Tempo e Loki.
+- `X-Request-ID`: Injetado automaticamente via `$request_id` para correlação de logs caso não venha do cliente.
+- `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`: Cabeçalhos padrão de proxy reverso.
+
+### 8.3. Script de Validação e Smoke Test
+
+O script [docker/ingress/verify-ingress.sh](file:///home/thallesteodoro/development/ticket-reservation-pdi/docker/ingress/verify-ingress.sh) permite validar sintaxe e conectividade:
+```bash
+./docker/ingress/verify-ingress.sh --dry-run
+./docker/ingress/verify-ingress.sh
+```

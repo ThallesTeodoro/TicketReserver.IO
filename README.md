@@ -22,6 +22,27 @@ Plataforma de alta concorrência para venda e reserva de ingressos construída c
 
 ---
 
+## 🚪 API Gateway & Ponto Único de Entrada (NGINX Alpine)
+
+A plataforma disponibiliza um **API Gateway / Ingress** centralizado em `http://localhost` (Porta `80` HTTP / `443` HTTPS), isolando a rede interna (`ticketreserver-internal-net`) e unificando o acesso a todas as APIs:
+
+| Rota Externa (Porta 80) | Serviço Upstream | Função Principal |
+| :--- | :--- | :--- |
+| `GET /healthz` | `ticketreserver-ingress` | Healthcheck do Gateway (`{"status":"UP"}`) |
+| `GET /events`, `POST /events` | `events-api:8080` | Catálogo e cadastro de eventos |
+| `GET /venues`, `GET /venues/{id}` | `events-api:8080` | Locais, estádios e arenas |
+| `POST /reserva/hold` | `reservation-api:8080` | Bloqueio temporário de assento (`SET NX EX 600`) |
+| `POST /reserva/checkout` | `reservation-api:8080` | Envio de reserva para a saga de pagamento |
+| `GET /reserva/{id}` | `reservation-api:8080` | Consulta de status e tempo restante do hold |
+| `GET /search?q=rock` | `search-api:8080` | Busca full-text facetada no ElasticSearch (rewrite para `/api/v1/search/events`) |
+| `GET /search/autocomplete?q=roc` | `search-api:8080` | Autocomplete com Edge N-Grams |
+| `GET /api/v1/search/*` | `search-api:8080` | Rotas versionadas diretas da API de busca |
+
+- **W3C Distributed Tracing**: O Ingress preserva e propaga transparentemente os headers `traceparent` e `tracestate` para os serviços internos, garantindo a visualização de traces ponta a ponta no Grafana Tempo.
+- **CORS Centralizado**: Tratamento unificado de preflight `OPTIONS` com headers `Access-Control-Allow-*`.
+
+---
+
 ## 📊 Stack de Observabilidade Full-Stack
 
 A plataforma inclui uma stack de telemetria completa e unificada:
@@ -74,13 +95,18 @@ Todos os microsserviços Web API e background workers utilizam a biblioteca comp
 docker compose up -d
 ```
 
-### 2. Validar a configuração e integridade da observabilidade
+### 2. Validar o Gateway e a Observabilidade
 ```bash
+# Validação da configuração do Ingress / API Gateway
+./docker/ingress/verify-ingress.sh --dry-run
+
+# Validação da configuração da Observabilidade
 ./docker/observability/verify-observability.sh --dry-run
 ```
 
 Ou com os containers rodando:
 ```bash
+./docker/ingress/verify-ingress.sh
 ./docker/observability/verify-observability.sh
 ```
 

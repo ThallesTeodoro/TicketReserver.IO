@@ -1,0 +1,23 @@
+services:
+  ingress:
+    image: nginx:1.27-alpine
+    container_name: ticketreserver-ingress
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_HTTP_PORT:-80}:80"
+      - "${GATEWAY_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -q 'ticketreserver-ingress' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 3s
+    depends_on:
+      - events-api
+      - reservation-api
+      - search-api
+    networks:
+      - ticketreserver-public-net
+      - ticketreserver-internal-net
