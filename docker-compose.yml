@@ -1,19 +1,19 @@
 include:
   - ./docker/redis/docker-compose.yml
   - ./docker/kafka/docker-compose.yml
-  - ./TR.API.Events/docker-compose.yml
-  - ./TR.API.Reservation/docker-compose.yml
-  - ./TR.HW.ReservationOutboxRelay/docker-compose.yml
-  - ./TR.HW.ResTimeout/docker-compose.yml
-  - ./TR.HW.Payment/docker-compose.yml
-  - ./TR.HW.Ticketing/docker-compose.yml
-  - ./TR.HW.Refund/docker-compose.yml
-  - ./TR.HW.ResCompensator/docker-compose.yml
-  - ./TR.HW.Notification/docker-compose.yml
+  - ./components/TR.API.Events/docker-compose.yml
+  - ./components/TR.API.Reservation/docker-compose.yml
+  - ./components/TR.HW.ReservationOutboxRelay/docker-compose.yml
+  - ./components/TR.HW.ResTimeout/docker-compose.yml
+  - ./components/TR.HW.Payment/docker-compose.yml
+  - ./components/TR.HW.Ticketing/docker-compose.yml
+  - ./components/TR.HW.Refund/docker-compose.yml
+  - ./components/TR.HW.ResCompensator/docker-compose.yml
+  - ./components/TR.HW.Notification/docker-compose.yml
   - ./docker/elasticsearch/docker-compose.yml
   - ./docker/debezium/docker-compose.yml
-  - ./TR.HW.Repl/docker-compose.yml
-  - ./TR.API.Search/docker-compose.yml
+  - ./components/TR.HW.Repl/docker-compose.yml
+  - ./components/TR.API.Search/docker-compose.yml
   - ./docker/observability/docker-compose.yml
   - ./docker/ingress/docker-compose.yml
 

@@ -80,39 +80,43 @@ Onde `[Tipo]` pode ser:
 *   `HW`: Heavy Workers / Background Services (ex: `TR.HW.Payment`, `TR.HW.Ticketing`, `TR.HW.ResTimeout`, `TR.HW.Refund`)
 *   `KFK`: Componentes ou conectores dedicados de streaming Kafka
 
-Cada componente possui sua pasta raiz com o nome do seu namespace base, contendo sua solução (.sln), Dockerfile e arquivo `docker-compose.yml` fragmentado:
+Cada componente reside no diretório `components/` com uma subpasta nomeada com seu namespace base, contendo sua solução (.sln), Dockerfile e arquivo `docker-compose.yml` fragmentado:
 
 ```text
 ticket-reservation-pdi/
 ├── docker-compose.yml                                # Compose raiz que agrega serviços via `include`
-├── TR.API.Events/                                    # Pasta do componente
-│   ├── TR.API.Events.sln                             # Solução dedicada .NET 10
-│   ├── Dockerfile                                    # Build multi-stage .NET 10
-│   ├── docker-compose.yml                            # Compose fragmentado do serviço
-│   ├── source/
-│   │   ├── TR.API.Events.Domain/                     # Entidades ricas, Value Objects, Enums, Exceptions
-│   │   │   ├── Contracts/Persistence/                # IRepository<T>, IUnitOfWork
-│   │   │   └── Entities/                             # Entidades com invariantes e IReadOnlyCollection
-│   │   ├── TR.API.Events.Application/                # Casos de uso em Vertical Slices
-│   │   │   ├── Common/Messaging/                     # ICommand, IQuery, ICommandHandler, IQueryHandler
-│   │   │   └── {Aggregate}/{UseCase}/                # Command/Query, Handler, Validator, Mappings
-│   │   ├── TR.API.Events.Infrastructure/             # EF Core, Repositories, Dapper, Postgres
-│   │   │   ├── Messaging/                            # Producers, Consumers, OutboxPublisher
-│   │   │   └── Persistence/                          # DbContext, Configurations (Fluent API), Repositories
-│   │   └── TR.API.Events.WebApi/                     # CarterModules, Program.cs, JsonResponse, Middlewares
-│   │       ├── Contracts/                            # JsonResponse<TData, TError>
-│   │       ├── Endpoints/                            # CarterModules por agregado
-│   │       └── Middlewares/                          # ExceptionHandlerMiddleware global
-│   └── tests/
-│       └── TR.API.Events.UnitTests/                  # Testes AAA com xUnit, Moq e FluentAssertions
-│           └── Application/{Aggregate}/{UseCase}Tests.cs
+├── components/                                       # Diretório agregador de componentes da plataforma
+│   ├── TR.API.Events/                                # Pasta do componente
+│   │   ├── TR.API.Events.sln                         # Solução dedicada .NET 10
+│   │   ├── Dockerfile                                # Build multi-stage .NET 10
+│   │   ├── docker-compose.yml                        # Compose fragmentado do serviço
+│   │   ├── source/
+│   │   │   ├── TR.API.Events.Domain/                 # Entidades ricas, Value Objects, Enums, Exceptions
+│   │   │   │   ├── Contracts/Persistence/            # IRepository<T>, IUnitOfWork
+│   │   │   │   └── Entities/                         # Entidades com invariantes e IReadOnlyCollection
+│   │   │   ├── TR.API.Events.Application/            # Casos de uso em Vertical Slices
+│   │   │   │   ├── Common/Messaging/                 # ICommand, IQuery, ICommandHandler, IQueryHandler
+│   │   │   │   └── {Aggregate}/{UseCase}/            # Command/Query, Handler, Validator, Mappings
+│   │   │   ├── TR.API.Events.Infrastructure/         # EF Core, Repositories, Dapper, Postgres
+│   │   │   │   ├── Messaging/                        # Producers, Consumers, OutboxPublisher
+│   │   │   │   └── Persistence/                      # DbContext, Configurations (Fluent API), Repositories
+│   │   │   └── TR.API.Events.WebApi/                 # CarterModules, Program.cs, JsonResponse, Middlewares
+│   │   │       ├── Contracts/                        # JsonResponse<TData, TError>
+│   │   │       ├── Endpoints/                        # CarterModules por agregado
+│   │   │       └── Middlewares/                      # ExceptionHandlerMiddleware global
+│   │   └── tests/
+│   │       └── TR.API.Events.UnitTests/              # Testes AAA com xUnit, Moq e FluentAssertions
+│   │           └── Application/{Aggregate}/{UseCase}Tests.cs
+│   ├── TR.API.Reservation/
+│   ├── TR.API.Search/
+│   └── TR.HW.*/
 ```
 
 ### 4.1. Orquestração Modular de Containers (Docker Compose `include`)
 Para evitar um `docker-compose.yml` monolítico e inchado na raiz, cada componente define seu próprio `docker-compose.yml` conectado à rede bridge compartilhada (`ticketreserver-internal-net`). O `docker-compose.yml` da raiz utiliza a diretiva nativa `include:` para agregar todos os módulos:
 ```yaml
 include:
-  - ./TR.API.Events/docker-compose.yml
+  - ./components/TR.API.Events/docker-compose.yml
 ```
 
 ---
