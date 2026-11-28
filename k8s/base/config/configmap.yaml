@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ticketreserver-common-config
+  labels:
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: configuration
+data:
+  ASPNETCORE_ENVIRONMENT: "Development"
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "1"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector-service:4317"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+  Kafka__BootstrapServers: "kafka-service:9094"
+  ConnectionStrings__Redis: "redis-service:6379,abortConnect=false"
+  ElasticSearch__Url: "http://elasticsearch-service:9200"
+  Elasticsearch__Uri: "http://elasticsearch-service:9200"
+  Database__Host: "postgres-service"
+  Database__Port: "5432"
+  Database__User: "postgres"
+  Logging__LogLevel__Default: "Information"
+  Logging__LogLevel__Microsoft.AspNetCore: "Warning"

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: res-outbox-relay
+  labels:
+    app.kubernetes.io/name: res-outbox-relay
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: worker
+spec:
+  # CRITICAL: Singleton pattern - must remain at 1 replica to prevent concurrent outbox polling
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: res-outbox-relay
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: res-outbox-relay
+        app.kubernetes.io/part-of: ticketreserver
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: res-outbox-relay
+          image: ticketreserver/tr-hw-reservation-outbox-relay:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: ticketreserver-common-config
+            - secretRef:
+                name: ticketreserver-secrets
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "reservation-outbox-relay"
+            - name: Kafka__BootstrapServers
+              value: "kafka-service:9094"
+            - name: Kafka__CheckoutTopic
+              value: "reservation.v1.checkout_req"
+            - name: Kafka__HoldCreatedDelayedTopic
+              value: "reservation.v1.hold_created.delayed"
+            - name: Kafka__DeadLetterQueueTopic
+              value: "reservation.v1.checkout_req.DLQ"
+            - name: Kafka__ClientId
+              value: "tr-hw-reservation-outbox-relay"
+            - name: OutboxRelay__BatchSize
+              value: "50"
+            - name: OutboxRelay__IntervalMilliseconds
+              value: "500"
+            - name: OutboxRelay__EmptyDelayMilliseconds
+              value: "1000"
+          resources:
+            requests:
+              cpu: "30m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "192Mi"

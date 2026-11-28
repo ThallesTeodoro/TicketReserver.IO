@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ticketreserver
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+labels:
+  - pairs:
+      environment: local-dev
+    includeSelectors: false
+
+images:
+  - name: ticketreserver/tr-api-events
+    newTag: latest
+  - name: ticketreserver/tr-api-reservation
+    newTag: latest
+  - name: ticketreserver/tr-api-search
+    newTag: latest
+  - name: ticketreserver/tr-hw-notification
+    newTag: latest
+  - name: ticketreserver/tr-hw-repl
+    newTag: latest
+  - name: ticketreserver/tr-hw-reservation-outbox-relay
+    newTag: latest
+  - name: ticketreserver/tr-hw-res-timeout
+    newTag: latest
+  - name: ticketreserver/tr-hw-res-compensator
+    newTag: latest
+  - name: ticketreserver/tr-hw-payment
+    newTag: latest
+  - name: ticketreserver/tr-hw-refund
+    newTag: latest
+  - name: ticketreserver/tr-hw-ticketing
+    newTag: latest

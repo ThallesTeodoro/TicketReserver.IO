@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Configuration & Secrets
+  - config/configmap.yaml
+  - config/secrets.yaml
+
+  # External Services & Networking
+  - networking/external-services.yaml
+  - networking/ingress.yaml
+
+  # Web APIs
+  - apis/events-api.yaml
+  - apis/reservation-api.yaml
+  - apis/search-api.yaml
+
+  # API Autoscaling (HPA)
+  - autoscaling/hpa-apis.yaml
+
+  # Background Workers
+  - workers/events-cdc-relay.yaml
+  - workers/search-replication.yaml
+  - workers/res-outbox-relay.yaml
+  - workers/res-timeout.yaml
+  - workers/res-compensation.yaml
+  - workers/payment.yaml
+  - workers/refund.yaml
+  - workers/ticketing.yaml
+
+  # Worker Event-driven Autoscaling (KEDA)
+  - autoscaling/keda-workers.yaml

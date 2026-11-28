@@ -1,0 +1,174 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: payment-worker-scaledobject
+  labels:
+    app.kubernetes.io/name: payment-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payment-worker
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-payment-processing
+        topic: reservation.v1.checkout_req
+        lagThreshold: "30"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: refund-worker-scaledobject
+  labels:
+    app.kubernetes.io/name: refund-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: refund-worker
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-payment-refund
+        topic: ticketing.v1.failed
+        lagThreshold: "20"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ticketing-worker-scaledobject
+  labels:
+    app.kubernetes.io/name: ticketing-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ticketing-worker
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-ticketing-worker
+        topic: payment.v1.approved
+        lagThreshold: "30"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: res-timeout-worker-scaledobject
+  labels:
+    app.kubernetes.io/name: res-timeout-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: res-timeout-worker
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-reservation-timeout
+        topic: reservation.v1.hold_created.delayed
+        lagThreshold: "50"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: res-compensation-worker-scaledobject
+  labels:
+    app.kubernetes.io/name: res-compensation-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: res-compensation-worker
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-reservation-compensator
+        topic: payment.v1.refunded
+        lagThreshold: "20"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: search-replication-worker-scaledobject
+  labels:
+    app.kubernetes.io/name: search-replication-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: search-replication-worker
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-search-replication-worker
+        topic: catalog.events.events
+        lagThreshold: "50"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: events-cdc-relay-scaledobject
+  labels:
+    app.kubernetes.io/name: events-cdc-relay
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: keda-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: events-cdc-relay
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 15
+  cooldownPeriod: 30
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka-service:9094
+        consumerGroup: cg-notification-worker
+        topic: ticketing.v1.issued
+        lagThreshold: "50"

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-replication-worker
+  labels:
+    app.kubernetes.io/name: search-replication-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: search-replication-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: search-replication-worker
+        app.kubernetes.io/part-of: ticketreserver
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: search-replication-worker
+          image: ticketreserver/tr-hw-repl:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: ticketreserver-common-config
+            - secretRef:
+                name: ticketreserver-secrets
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "search-replication-worker"
+            - name: KafkaConsumer__BootstrapServers
+              value: "kafka-service:9094"
+            - name: KafkaConsumer__GroupId
+              value: "cg-search-replication-worker"
+            - name: KafkaConsumer__Topics__0
+              value: "catalog.events.events"
+            - name: KafkaConsumer__Topics__1
+              value: "catalog.events.venues"
+            - name: KafkaConsumer__Topics__2
+              value: "catalog.events.ticket_tiers"
+            - name: Elasticsearch__Uri
+              value: "http://elasticsearch-service:9200"
+            - name: Elasticsearch__DefaultIndex
+              value: "events_search_v1"
+            - name: Elasticsearch__AliasName
+              value: "events_search"
+          resources:
+            requests:
+              cpu: "30m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "192Mi"

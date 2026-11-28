@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ticketreserver
+  labels:
+    app.kubernetes.io/part-of: ticketreserver
+    environment: local-dev

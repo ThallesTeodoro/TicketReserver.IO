@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: res-compensation-worker
+  labels:
+    app.kubernetes.io/name: res-compensation-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: res-compensation-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: res-compensation-worker
+        app.kubernetes.io/part-of: ticketreserver
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: res-compensation-worker
+          image: ticketreserver/tr-hw-res-compensator:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: ticketreserver-common-config
+            - secretRef:
+                name: ticketreserver-secrets
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "res-compensator-worker"
+            - name: KafkaConsumer__BootstrapServers
+              value: "kafka-service:9094"
+            - name: KafkaConsumer__GroupId
+              value: "cg-reservation-compensator"
+            - name: KafkaConsumer__Topics__0
+              value: "payment.v1.refunded"
+            - name: KafkaConsumer__Topics__1
+              value: "payment.v1.declined"
+            - name: KafkaConsumer__Topics__2
+              value: "ticketing.v1.issued"
+            - name: KafkaConsumer__DeadLetterQueueTopic
+              value: "payment.v1.refunded.DLQ"
+          resources:
+            requests:
+              cpu: "30m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "192Mi"

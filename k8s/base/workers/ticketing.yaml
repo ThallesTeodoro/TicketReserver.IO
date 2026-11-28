@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticketing-worker
+  labels:
+    app.kubernetes.io/name: ticketing-worker
+    app.kubernetes.io/part-of: ticketreserver
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ticketing-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ticketing-worker
+        app.kubernetes.io/part-of: ticketreserver
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: ticketing-worker
+          image: ticketreserver/tr-hw-ticketing:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: ticketreserver-common-config
+            - secretRef:
+                name: ticketreserver-secrets
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "ticketing-worker"
+            - name: Database__ConnectionString
+              value: "Host=postgres-service;Port=5432;Database=ticketing_db;Username=postgres;Password=postgres"
+            - name: Kafka__BootstrapServers
+              value: "kafka-service:9094"
+            - name: Kafka__TicketsIssuedTopic
+              value: "ticketing.v1.issued"
+            - name: Kafka__TicketingFailedTopic
+              value: "ticketing.v1.failed"
+            - name: Kafka__DeadLetterQueueTopic
+              value: "payment.v1.approved.DLQ"
+            - name: KafkaConsumer__BootstrapServers
+              value: "kafka-service:9094"
+            - name: KafkaConsumer__Topic
+              value: "payment.v1.approved"
+            - name: KafkaConsumer__GroupId
+              value: "cg-ticketing-worker"
+            - name: KafkaConsumer__DeadLetterQueueTopic
+              value: "payment.v1.approved.DLQ"
+            - name: TicketingSecurity__QrCodeSecretKey
+              value: "ticketreserver-default-hmac-secret-key-2026-anti-fraud"
+          resources:
+            requests:
+              cpu: "30m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "192Mi"

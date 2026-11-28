@@ -119,6 +119,12 @@ include:
   - ./components/TR.API.Events/docker-compose.yml
 ```
 
+### 4.2. Orquestração em Kubernetes com Kustomize
+Para escalabilidade horizontal (HPA v2), autoscaling orientado a eventos via KEDA (lag de filas Kafka), gerenciamento de réplicas e simulação de ambiente de produção, a plataforma disponibiliza manifestos declarativos organizados via **Kustomize** no diretório `k8s/`:
+* `k8s/base/`: Definições agnósticas de Deployments, ClusterIP Services, Ingress, HPA, KEDA ScaledObjects e bridges de rede `ExternalName` para a infraestrutura de dados local (`host.docker.internal`).
+* `k8s/overlays/local/`: Overlay para clusters locais de desenvolvimento (Kind, Minikube, K3d ou Docker Desktop) no namespace `ticketreserver`.
+* Automação via scripts: `scripts/k8s-local-up.sh` (build de imagens locais e deploy) e `scripts/k8s-local-down.sh` (teardown). Veja detalhes em [k8s/README.md](file:///home/thallesteodoro/development/ticket-reservation-pdi/k8s/README.md).
+
 ---
 
 ## 5. Diretrizes de Desenvolvimento (Regras de Ouro & Hard Blockers)
